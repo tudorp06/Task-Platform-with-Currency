@@ -8,9 +8,6 @@ const PAYOUT_METHODS_DB_KEY = "app_contributor_payout_methods_db";
 const PAYOUT_REQUESTS_DB_KEY = "app_contributor_payout_requests_db";
 const BALANCES_DB_KEY = "app_contributor_balances_db";
 const RECEIPTS_DB_KEY = "app_contributor_receipts_db";
-const THEME_KEY = "app_contributor_theme";
-const THEME_NEO_MINT = "neo-mint";
-const THEME_DARK_ACCENT = "dark-accent";
 
 const navbarRight = document.getElementById("navbar-right");
 const dashboardList = document.getElementById("dashboard-list");
@@ -72,39 +69,6 @@ const payoutRequestList = document.getElementById("payout-request-list");
 const receiptList = document.getElementById("receipt-list");
 let contributorPaymentMethods = [];
 const adminUserCollapsed = new Set();
-
-function currentTheme() {
-  const stored = localStorage.getItem(THEME_KEY);
-  return stored === THEME_DARK_ACCENT ? THEME_DARK_ACCENT : THEME_NEO_MINT;
-}
-
-function applyTheme(theme) {
-  const nextTheme = theme === THEME_DARK_ACCENT ? THEME_DARK_ACCENT : THEME_NEO_MINT;
-  document.body.dataset.theme = nextTheme;
-  localStorage.setItem(THEME_KEY, nextTheme);
-}
-
-function themeToggleLabel() {
-  return document.body.dataset.theme === THEME_DARK_ACCENT ? "Dark" : "Light";
-}
-
-function themeToggleMarkup() {
-  const isDark = document.body.dataset.theme === THEME_DARK_ACCENT;
-  return `<button class="theme-toggle-btn ${isDark ? "is-dark" : ""}" id="theme-toggle-btn" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
-    <span class="theme-toggle-track"></span>
-    <span class="theme-toggle-label">${themeToggleLabel()}</span>
-  </button>`;
-}
-
-function bindThemeToggle(session) {
-  const button = document.getElementById("theme-toggle-btn");
-  if (!button) return;
-  button.addEventListener("click", () => {
-    const next = document.body.dataset.theme === THEME_DARK_ACCENT ? THEME_NEO_MINT : THEME_DARK_ACCENT;
-    applyTheme(next);
-    renderNavbar(session);
-  });
-}
 
 function showActionFeedback(element, message, isError = false) {
   if (!element) return;
@@ -244,7 +208,6 @@ function getCurrentUserRecord(session) {
 function renderNavbar(session) {
   const tasksLink = session.role === "contributor" ? `<a class="btn btn-ghost" href="./tasks.html">Tasks</a>` : "";
   navbarRight.innerHTML = `
-    ${themeToggleMarkup()}
     ${tasksLink}
     <a class="btn btn-ghost" href="./dashboard.html">Dashboard</a>
     <button class="btn btn-ghost" id="logout-btn">Logout</button>
@@ -254,7 +217,6 @@ function renderNavbar(session) {
       Profile
     </a>
   `;
-  bindThemeToggle(session);
   document.getElementById("logout-btn").addEventListener("click", async () => {
     try {
       const csrfToken = readCookie("appcontributor_csrf");
@@ -1660,7 +1622,6 @@ if (!session) {
 } else if (!session.profileCompleted) {
   window.location.href = session.role === "startup" ? "./startup-onboarding.html" : "./onboarding.html";
 } else {
-  applyTheme(currentTheme());
   renderNavbar(session);
   sessionStorage.setItem(LAST_PAGE_KEY, "./dashboard.html");
   setBrandLinkTarget(session);

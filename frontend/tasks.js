@@ -4,9 +4,6 @@ const API_BASE_URL = "http://127.0.0.1:8000/api";
 const LAST_PAGE_KEY = "app_contributor_last_page";
 const SUBMISSIONS_DB_KEY = "app_contributor_submissions_db";
 const TASK_SHORTLIST_KEY = "app_contributor_task_shortlist";
-const THEME_KEY = "app_contributor_theme";
-const THEME_NEO_MINT = "neo-mint";
-const THEME_DARK_ACCENT = "dark-accent";
 
 const navbarRight = document.getElementById("navbar-right");
 const taskList = document.getElementById("task-list");
@@ -37,39 +34,6 @@ let pendingAttachments = [];
 const MAX_ATTACHMENTS = 5;
 const MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024;
 const ALLOWED_ATTACHMENT_EXTENSIONS = new Set([".py", ".pdf", ".txt", ".md", ".zip", ".png", ".jpg", ".jpeg"]);
-
-function currentTheme() {
-  const stored = localStorage.getItem(THEME_KEY);
-  return stored === THEME_DARK_ACCENT ? THEME_DARK_ACCENT : THEME_NEO_MINT;
-}
-
-function applyTheme(theme) {
-  const nextTheme = theme === THEME_DARK_ACCENT ? THEME_DARK_ACCENT : THEME_NEO_MINT;
-  document.body.dataset.theme = nextTheme;
-  localStorage.setItem(THEME_KEY, nextTheme);
-}
-
-function themeToggleLabel() {
-  return document.body.dataset.theme === THEME_DARK_ACCENT ? "Dark" : "Light";
-}
-
-function themeToggleMarkup() {
-  const isDark = document.body.dataset.theme === THEME_DARK_ACCENT;
-  return `<button class="theme-toggle-btn ${isDark ? "is-dark" : ""}" id="theme-toggle-btn" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
-    <span class="theme-toggle-track"></span>
-    <span class="theme-toggle-label">${themeToggleLabel()}</span>
-  </button>`;
-}
-
-function bindThemeToggle() {
-  const button = document.getElementById("theme-toggle-btn");
-  if (!button) return;
-  button.addEventListener("click", () => {
-    const next = document.body.dataset.theme === THEME_DARK_ACCENT ? THEME_NEO_MINT : THEME_DARK_ACCENT;
-    applyTheme(next);
-    renderNavbar();
-  });
-}
 
 function readCookie(name) {
   const target = `${name}=`;
@@ -194,7 +158,6 @@ function renderNavbar() {
   }
 
   navbarRight.innerHTML = `
-    ${themeToggleMarkup()}
     <a class="btn btn-ghost" href="./tasks.html">Tasks</a>
     <a class="btn btn-ghost" href="./dashboard.html">Dashboard</a>
     <button class="btn btn-ghost" id="logout-btn">Logout</button>
@@ -204,7 +167,6 @@ function renderNavbar() {
       Profile
     </a>
   `;
-  bindThemeToggle();
   document.getElementById("logout-btn").addEventListener("click", async () => {
     try {
       const csrfToken = readCookie("appcontributor_csrf");
@@ -482,7 +444,6 @@ languageFilter.addEventListener("change", async (event) => {
   await renderTasks();
 });
 
-applyTheme(currentTheme());
 renderNavbar();
 sessionStorage.setItem(LAST_PAGE_KEY, "./tasks.html");
 setBrandLinkTarget();

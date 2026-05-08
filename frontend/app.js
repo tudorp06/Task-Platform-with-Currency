@@ -3,9 +3,6 @@ const USERS_DB_KEY = "app_contributor_users_db";
 const LAST_PAGE_KEY = "app_contributor_last_page";
 const AUTH_TOKEN_KEY = "app_contributor_auth_token";
 const API_BASE_URL = "http://127.0.0.1:8000/api";
-const THEME_KEY = "app_contributor_theme";
-const THEME_NEO_MINT = "neo-mint";
-const THEME_DARK_ACCENT = "dark-accent";
 
 const navbarRight = document.getElementById("navbar-right");
 const authModal = document.getElementById("auth-modal");
@@ -29,39 +26,6 @@ let activeRole = "contributor";
 let authMode = "login";
 const isOpsAccess = new URLSearchParams(window.location.search).get("ops") === "1";
 let authModalPointerDownOnBackdrop = false;
-
-function currentTheme() {
-  const stored = localStorage.getItem(THEME_KEY);
-  return stored === THEME_DARK_ACCENT ? THEME_DARK_ACCENT : THEME_NEO_MINT;
-}
-
-function applyTheme(theme) {
-  const nextTheme = theme === THEME_DARK_ACCENT ? THEME_DARK_ACCENT : THEME_NEO_MINT;
-  document.body.dataset.theme = nextTheme;
-  localStorage.setItem(THEME_KEY, nextTheme);
-}
-
-function themeToggleLabel() {
-  return document.body.dataset.theme === THEME_DARK_ACCENT ? "Dark" : "Light";
-}
-
-function themeToggleMarkup() {
-  const isDark = document.body.dataset.theme === THEME_DARK_ACCENT;
-  return `<button class="theme-toggle-btn ${isDark ? "is-dark" : ""}" id="theme-toggle-btn" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
-    <span class="theme-toggle-track"></span>
-    <span class="theme-toggle-label">${themeToggleLabel()}</span>
-  </button>`;
-}
-
-function bindThemeToggle() {
-  const button = document.getElementById("theme-toggle-btn");
-  if (!button) return;
-  button.addEventListener("click", () => {
-    const next = document.body.dataset.theme === THEME_DARK_ACCENT ? THEME_NEO_MINT : THEME_DARK_ACCENT;
-    applyTheme(next);
-    renderNavbar();
-  });
-}
 
 function loadJson(key, fallback) {
   try {
@@ -276,12 +240,10 @@ function renderNavbar() {
   if (!session || !session.isAuthenticated) {
     const opsButton = isOpsAccess ? `<button class="btn btn-primary" id="nav-signin-admin">Ops access</button>` : "";
     navbarRight.innerHTML = `
-      ${themeToggleMarkup()}
       <button class="btn btn-ghost" id="nav-signin-contributor">Sign in</button>
       <button class="btn btn-ghost" id="nav-signin-startup">Startup access</button>
       ${opsButton}
     `;
-    bindThemeToggle();
     document
       .getElementById("nav-signin-contributor")
       .addEventListener("click", () => openModal("contributor"));
@@ -297,7 +259,6 @@ function renderNavbar() {
   if (!session.profileCompleted) {
     const setupRoute = setupRouteForRole(session.role);
     navbarRight.innerHTML = `
-      ${themeToggleMarkup()}
       <span class="chip">Complete setup to unlock workspace</span>
       <a class="btn btn-primary" href="${setupRoute}">Continue setup</a>
       <button class="btn btn-ghost" id="logout-btn">Logout</button>
@@ -306,7 +267,6 @@ function renderNavbar() {
         Profile
       </a>
     `;
-    bindThemeToggle();
     document.getElementById("logout-btn").addEventListener("click", async () => {
       await logoutRequest();
       clearSession();
@@ -317,7 +277,6 @@ function renderNavbar() {
 
   const tasksLink = session.role === "contributor" ? `<a class="btn btn-ghost" href="./tasks.html">Tasks</a>` : "";
   navbarRight.innerHTML = `
-    ${themeToggleMarkup()}
     ${tasksLink}
     <a class="btn btn-ghost" href="./dashboard.html">Dashboard</a>
     <button class="btn btn-ghost" id="logout-btn">Logout</button>
@@ -327,7 +286,6 @@ function renderNavbar() {
       Profile
     </a>
   `;
-  bindThemeToggle();
 
   document.getElementById("logout-btn").addEventListener("click", async () => {
     await logoutRequest();
@@ -480,7 +438,6 @@ const bootstrapSession = loadSession();
 if (bootstrapSession?.isAuthenticated && !bootstrapSession.profileCompleted) {
   window.location.href = setupRouteForRole(bootstrapSession.role);
 } else {
-  applyTheme(currentTheme());
   renderNavbar();
   sessionStorage.setItem(LAST_PAGE_KEY, "./index.html");
   setBrandLinkTarget();
