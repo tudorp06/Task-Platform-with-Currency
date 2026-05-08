@@ -1,6 +1,6 @@
 # AppContributor
 
-> A task-based platform where startups post real coding blockers and developers submit practical fixes for rewards.
+> A task-based platform where startups post real coding blockers, errors and developers submit practical fixes for rewards.
 
 ![Status](https://img.shields.io/badge/status-beta-blue)
 ![Backend](https://img.shields.io/badge/backend-FastAPI-009688)
@@ -34,8 +34,8 @@ AppContributor pays for **actual debugging and implementation work** that helps 
 ## Features (current)
 
 - 🔐 Auth + role-based access (`contributor`, `startup`, `admin`)
-- 📋 Task marketplace with rewards and slot limits
-- 🧩 Submission pipeline with review states
+- 📋 Task marketplace with rewards and slot limits -> Mostly, 5 possible contributors per task
+- 🧩 Submission of a task functionality with review states
 - 📎 Optional submission attachments (`.py`, `.pdf`, `.txt`, `.md`, `.zip`, `.png`, `.jpg`)
 - 🧾 Wallet, payout requests, and receipts
 - 📉 Admin analytics + user activity overview
