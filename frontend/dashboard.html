@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - AppContributor</title>
+    <link rel="icon" type="image/png" href="./logo.png?v=2" />
+    <link rel="shortcut icon" href="./logo.png?v=2" />
+    <link rel="apple-touch-icon" href="./logo.png?v=2" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="navbar">
+      <a id="brand-link" class="brand-box" href="./dashboard.html">
+        <img
+          class="brand-logo-image"
+          src="./logo.png?v=2"
+          alt="AppContributor logo"
+        />
+        <div class="brand-text">
+          <strong>AppContributor</strong>
+          <span class="brand-version-chip">BETA</span>
+        </div>
+      </a>
+      <div id="navbar-right" class="nav-actions"></div>
+    </header>
+
+    <main>
+      <section class="section section-shell">
+        <div class="page-intro">
+          <h2>Workspace Dashboard</h2>
+          <p>Review activity, manage payouts and submissions, and keep every task decision transparent.</p>
+        </div>
+      </section>
+      <section id="contributor-section" class="section section-shell">
+        <div class="section-head">
+          <h2><img class="ui-icon-img" src="./icon-user.svg" alt="" />Profile</h2>
+          <span class="section-note">Your contributor profile and qualifications</span>
+        </div>
+        <div id="user-profile-card" class="card profile-card"></div>
+
+        <div class="section-head section-head-spaced">
+          <h2><img class="ui-icon-img" src="./icon-review.svg" alt="" />Submissions</h2>
+        </div>
+        <div class="submission-focus-section">
+          <div id="dashboard-list" class="admin-list"></div>
+        </div>
+
+        <div class="section-head section-head-spaced">
+          <h2>Wallet & Payouts</h2>
+          <span class="section-note">Secure payout setup with tokenized methods.</span>
+        </div>
+        <div id="wallet-summary" class="card"></div>
+        <div class="task-content-grid" style="margin-top: 12px;">
+          <section class="task-submit">
+            <h4>Secure payout method</h4>
+            <form id="payment-method-form">
+              <label>
+                Method type
+                <select id="payment-method-type" required>
+                  <option value="paypal">PayPal</option>
+                  <option value="card">Credit / Debit Card</option>
+                </select>
+              </label>
+              <label id="paypal-email-wrap">
+                PayPal email
+                <input id="paypal-email-input" type="email" placeholder="you@paypalmail.com" />
+              </label>
+              <label id="card-number-wrap" class="hidden">
+                Card details
+                <div class="stripe-card-shell">
+                  <div class="stripe-card-shell-head">
+                    <span class="stripe-card-badge">Debit / Credit</span>
+                    <span class="stripe-card-network-hint">Visa, Mastercard, AMEX</span>
+                  </div>
+                  <div id="stripe-card-element" class="stripe-card-element"></div>
+                </div>
+                <small id="stripe-card-error" class="stripe-card-error hidden"></small>
+              </label>
+              <label id="card-name-wrap" class="hidden">
+                Card holder name
+                <input id="card-name-input" type="text" autocomplete="cc-name" placeholder="Alex Morgan" />
+              </label>
+              <label id="card-email-wrap" class="hidden">
+                Billing email
+                <input id="card-email-input" type="email" autocomplete="email" placeholder="billing@yourcompany.com" />
+              </label>
+              <p class="section-note secure-note">Card data is validated and immediately tokenized. Full number and CVV are not stored.</p>
+              <button type="submit" class="btn btn-primary">Save secure method</button>
+            </form>
+            <div id="payment-method-list" class="admin-list"></div>
+          </section>
+
+          <section class="task-submit">
+            <h4>Request payout</h4>
+            <form id="payout-request-form">
+              <label>
+                Amount (USD)
+                <input id="payout-amount-input" type="number" min="1" step="0.5" required />
+              </label>
+              <label>
+                Payout method
+                <select id="payout-method-select" required></select>
+              </label>
+              <button type="submit" class="btn btn-primary">Request payout</button>
+            </form>
+            <div id="payout-request-list" class="admin-list"></div>
+          </section>
+        </div>
+
+        <div class="section-head section-head-spaced">
+          <h2><img class="ui-icon-img" src="./icon-payout.svg" alt="" />Payment Receipts</h2>
+        </div>
+        <div id="receipt-list" class="admin-list"></div>
+
+        <div class="section-head section-head-spaced">
+          <h2><img class="ui-icon-img" src="./icon-review.svg" alt="" />Trust & Legal</h2>
+        </div>
+        <section class="legal-rubric">
+          <p class="legal-lead">
+            By using AppContributor, founders and contributors agree that payouts depend on review outcomes, dispute handling, and verified payment
+            logs. Approved submissions can receive full or partial payout.
+          </p>
+          <ul class="legal-points">
+            <li>One submission per contributor per task: resubmitting the same task is not allowed.</li>
+            <li>Contributors must submit original reasoning and code that matches the issue.</li>
+            <li>Admins must give clear outcomes (approved, partial, rejected) with review notes.</li>
+            <li>Disputes are for fairness and policy checks, not unlimited retries.</li>
+            <li>All payout actions are timestamped and linked to PayPal/Visa method records.</li>
+            <li>Rejected submissions must include reason + review note for transparency.</li>
+            <li>Disputes are reviewed with preserved submission and payout audit history.</li>
+            <li>Webhook/provider confirmations serve as the source of truth for payment status.</li>
+          </ul>
+        </section>
+      </section>
+
+      <section id="admin-section" class="section section-shell hidden">
+        <div class="section-head">
+          <h2><img class="ui-icon-img" src="./icon-review.svg" alt="" />Platform Analytics (24h)</h2>
+        </div>
+        <div id="admin-analytics-overview" class="card-grid"></div>
+
+        <div class="section-head">
+          <h2><img class="ui-icon-img" src="./icon-wallet.svg" alt="" />Task Catalog Management</h2>
+        </div>
+        <section class="task-submit admin-task-create-shell">
+          <h4>Create new catalog task</h4>
+          <p id="admin-task-create-feedback" class="admin-action-feedback hidden" role="status" aria-live="polite"></p>
+          <form id="admin-task-create-form" class="admin-task-create-grid">
+            <label>
+              Task ID
+              <input id="admin-task-id" type="text" placeholder="Optional, e.g. TASK-300" />
+            </label>
+            <label>
+              Title
+              <input id="admin-task-title" type="text" required />
+            </label>
+            <label>
+              Language
+              <input id="admin-task-language" type="text" required />
+            </label>
+            <label>
+              Reward (USD)
+              <input id="admin-task-reward" type="number" min="1" step="0.5" required />
+            </label>
+            <label>
+              Status
+              <input id="admin-task-status" type="text" value="open" required />
+            </label>
+            <label>
+              Startup name
+              <input id="admin-task-startup" type="text" placeholder="Startup App" />
+            </label>
+            <label>
+              Summary
+              <input id="admin-task-summary" type="text" required />
+            </label>
+            <label>
+              Endpoints
+              <input id="admin-task-endpoints" type="text" value="N/A" required />
+            </label>
+            <label>
+              Layout
+              <input id="admin-task-layout" type="text" value="N/A" required />
+            </label>
+            <label>
+              Run instructions
+              <input id="admin-task-run" type="text" value="N/A" required />
+            </label>
+            <label class="admin-task-create-wide">
+              Description
+              <textarea id="admin-task-description" rows="4" required></textarea>
+            </label>
+            <button type="submit" class="btn btn-primary admin-task-create-wide">Create task</button>
+          </form>
+        </section>
+        <div id="admin-task-list" class="admin-list"></div>
+
+        <div class="section-head section-head-spaced">
+          <h2><img class="ui-icon-img" src="./icon-review.svg" alt="" />Reviews</h2>
+        </div>
+        <div id="admin-submission-list" class="admin-list"></div>
+
+        <div class="section-head section-head-spaced">
+          <h2><img class="ui-icon-img" src="./icon-payout.svg" alt="" />Payout Requests</h2>
+        </div>
+        <div id="admin-payout-list" class="admin-list"></div>
+
+        <div class="section-head section-head-spaced">
+          <h2><img class="ui-icon-img" src="./icon-review.svg" alt="" />Disputes</h2>
+        </div>
+        <div id="admin-dispute-list" class="admin-list"></div>
+
+        <div class="section-head section-head-spaced">
+          <h2><img class="ui-icon-img" src="./icon-user.svg" alt="" />Startup Registrations</h2>
+        </div>
+        <div id="admin-startup-list" class="admin-list"></div>
+
+        <div class="section-head section-head-spaced">
+          <h2><img class="ui-icon-img" src="./icon-wallet.svg" alt="" />Startup Task Requests</h2>
+        </div>
+        <div id="admin-startup-task-request-list" class="admin-list"></div>
+
+        <div class="section-head section-head-spaced">
+          <h2><img class="ui-icon-img" src="./icon-user.svg" alt="" />User Access Control</h2>
+        </div>
+        <p id="admin-user-save-feedback" class="admin-action-feedback hidden" role="status" aria-live="polite"></p>
+        <div id="admin-user-list" class="admin-list"></div>
+      </section>
+
+      <section id="startup-section" class="section section-shell hidden">
+        <div class="section-head">
+          <h2><img class="ui-icon-img" src="./icon-user.svg" alt="" />Startup Workspace</h2>
+          <span class="section-note">Submit task requests after your startup gets approved by platform ops.</span>
+        </div>
+        <div id="startup-status-card" class="card"></div>
+
+        <div class="section-head section-head-spaced">
+          <h2><img class="ui-icon-img" src="./icon-review.svg" alt="" />Propose Task Offer</h2>
+          <span class="section-note">Fast review queue: clear repro steps + clear acceptance checks = faster contributor response.</span>
+        </div>
+        <section class="task-submit">
+          <form id="startup-task-request-form">
+            <label>
+              Task title
+              <input id="startup-task-title" type="text" placeholder="Fix stale cache in task board after update" required />
+            </label>
+            <label>
+              Main language
+              <input id="startup-task-language" type="text" placeholder="TypeScript (example: TypeScript, Python, SQL)" required />
+            </label>
+            <label>
+              Reward (USD)
+              <input id="startup-task-reward" type="number" min="1" step="0.5" required />
+            </label>
+            <label>
+              Context and problem details
+              <textarea id="startup-task-details" rows="5" placeholder="Template: 1) Repro steps 2) Expected behavior 3) Actual behavior 4) Constraints/deadline." required></textarea>
+            </label>
+            <label>
+              Acceptance rules
+              <textarea id="startup-task-rules" rows="4" placeholder="Template: done when..., tests/checks..., edge cases..., partial payout when..." required></textarea>
+            </label>
+            <p id="startup-task-publish-hint" class="section-note">Hint: fill language + reward to see response-time estimate.</p>
+            <button type="submit" class="btn btn-primary">Submit task request</button>
+          </form>
+        </section>
+
+        <div class="section-head section-head-spaced">
+          <h2><img class="ui-icon-img" src="./icon-payout.svg" alt="" />Your Submitted Requests</h2>
+        </div>
+        <div id="startup-task-request-list" class="admin-list"></div>
+
+        <div class="section-head section-head-spaced">
+          <h2><img class="ui-icon-img" src="./icon-review.svg" alt="" />Rate Completed Submissions</h2>
+          <span class="section-note">Rate how useful each reviewed submission was for your startup. Payout remains admin-controlled.</span>
+        </div>
+        <div id="startup-submission-feedback-list" class="admin-list"></div>
+
+        <div class="section-head section-head-spaced">
+          <h2><img class="ui-icon-img" src="./icon-review.svg" alt="" />Task Deletion Approvals</h2>
+          <span class="section-note">If admin wants to remove your task, you approve or reject it here.</span>
+        </div>
+        <div id="startup-task-deletion-request-list" class="admin-list"></div>
+      </section>
+    </main>
+
+    <footer class="site-rubric-footer">
+      <div class="site-rubric-main">
+        <div class="site-rubric-brand">
+          <div class="site-rubric-logo-line">
+            <img src="./logo.png?v=2" alt="AppContributor logo" class="site-rubric-logo" />
+            <strong>AppContributor</strong>
+          </div>
+          <p class="site-rubric-summary">A coding task marketplace where contributors solve real startup issues and get paid after review.</p>
+        </div>
+        <nav class="site-rubric-links">
+          <div>
+            <p>Platform</p>
+            <a href="./index.html#home">Home</a>
+            <a href="./index.html#how-it-works">How it works</a>
+            <a href="./index.html#ways-to-earn">Ways to earn</a>
+            <a href="./index.html#faqs">FAQs</a>
+          </div>
+          <div>
+            <p>Account</p>
+            <a href="./index.html">Sign up</a>
+            <a href="./index.html">Log in</a>
+            <a href="./dashboard.html">Dashboard</a>
+          </div>
+          <div>
+            <p>Legal</p>
+            <a href="./index.html#terms">Terms of service</a>
+            <a href="./index.html#privacy">Privacy policy</a>
+          </div>
+        </nav>
+      </div>
+      <div class="site-rubric-bottom">
+        <span>© 2026 AppContributor. All rights reserved.</span>
+        <span>support@appcontributor.com</span>
+      </div>
+    </footer>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="./dashboard.js"></script>
+  </body>
+</html>

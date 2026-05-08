@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Onboarding - AppContributor</title>
+    <link rel="icon" type="image/png" href="./logo.png?v=2" />
+    <link rel="shortcut icon" href="./logo.png?v=2" />
+    <link rel="apple-touch-icon" href="./logo.png?v=2" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="navbar">
+      <a id="brand-link" class="brand-box" href="./index.html">
+        <img class="brand-logo-image" src="./logo.png?v=2" alt="AppContributor logo" />
+        <div class="brand-text">
+          <strong>AppContributor</strong>
+          <span class="brand-version-chip">BETA</span>
+        </div>
+      </a>
+      <div id="navbar-right" class="nav-actions"></div>
+    </header>
+
+    <main>
+      <section class="section onboarding-section">
+        <div class="onboarding-intro">
+          <h2>Complete your contributor profile</h2>
+          <span class="section-note">One-time setup before you can work on paid tasks.</span>
+        </div>
+        <article class="card onboarding-card">
+          <form id="onboarding-form">
+            <label>
+              Country / Region
+              <select id="country-input" required>
+                <option value="">Select country</option>
+                <option>Australia</option>
+                <option>Austria</option>
+                <option>Belgium</option>
+                <option>Brazil</option>
+                <option>Bulgaria</option>
+                <option>Canada</option>
+                <option>Croatia</option>
+                <option>Czech Republic</option>
+                <option>Denmark</option>
+                <option>Finland</option>
+                <option>France</option>
+                <option>Germany</option>
+                <option>Greece</option>
+                <option>Hungary</option>
+                <option>India</option>
+                <option>Ireland</option>
+                <option>Italy</option>
+                <option>Netherlands</option>
+                <option>Norway</option>
+                <option>Poland</option>
+                <option>Portugal</option>
+                <option>Romania</option>
+                <option>Serbia</option>
+                <option>Slovakia</option>
+                <option>Slovenia</option>
+                <option>Spain</option>
+                <option>Sweden</option>
+                <option>Switzerland</option>
+                <option>United Kingdom</option>
+                <option>United States</option>
+                <option>Other</option>
+              </select>
+            </label>
+            <label>
+              Education level
+              <select id="qualification-input" required>
+                <option value="">Select education level</option>
+                <option>No formal education</option>
+                <option>Primary school</option>
+                <option>Middle school</option>
+                <option>High school</option>
+                <option>Student</option>
+                <option>Graduate (Bachelor's)</option>
+                <option>Master's</option>
+                <option>PhD</option>
+                <option>Honors</option>
+                <option>Bootcamp</option>
+                <option>Self-taught</option>
+                <option>Other</option>
+              </select>
+            </label>
+            <label>
+              Years of experience
+              <select id="experience-input" required>
+                <option value="">Select years</option>
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+                <option value="15">15</option>
+                <option value="16">16</option>
+                <option value="17">17</option>
+                <option value="18">18</option>
+                <option value="19">19</option>
+                <option value="20">20</option>
+                <option value="21">21</option>
+                <option value="22">22</option>
+                <option value="23">23</option>
+                <option value="24">24</option>
+                <option value="25">25</option>
+                <option value="26">26</option>
+                <option value="27">27</option>
+                <option value="28">28</option>
+                <option value="29">29</option>
+                <option value="30">30</option>
+              </select>
+            </label>
+            <label>
+              Skills (comma separated)
+              <input id="skills-input" type="text" required />
+            </label>
+            <label>
+              GitHub profile URL
+              <input id="github-input" type="url" required />
+            </label>
+            <label>
+              Short bio
+              <textarea id="bio-input" rows="4" required></textarea>
+            </label>
+
+            <div class="context-block">
+              <h5>Quick sorting challenge</h5>
+              <p class="section-note">
+                Sort this list ascending and write the answer as comma-separated values: <strong>9, 1, 7, 3, 5</strong>
+              </p>
+              <input id="sorting-answer-input" type="text" required />
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-shiny">Finish setup</button>
+          </form>
+        </article>
+      </section>
+    </main>
+
+    <footer class="site-rubric-footer">
+      <div class="site-rubric-main">
+        <div class="site-rubric-brand">
+          <div class="site-rubric-logo-line">
+            <img src="./logo.png?v=2" alt="AppContributor logo" class="site-rubric-logo" />
+            <strong>AppContributor</strong>
+          </div>
+          <p class="site-rubric-summary">A coding task marketplace where contributors solve real startup issues and get paid after review.</p>
+        </div>
+        <nav class="site-rubric-links">
+          <div>
+            <p>Platform</p>
+            <a href="./index.html#home">Home</a>
+            <a href="./index.html#how-it-works">How it works</a>
+            <a href="./index.html#ways-to-earn">Ways to earn</a>
+            <a href="./index.html#faqs">FAQs</a>
+          </div>
+          <div>
+            <p>Account</p>
+            <a href="./index.html">Sign up</a>
+            <a href="./index.html">Log in</a>
+            <a href="./dashboard.html">Dashboard</a>
+          </div>
+          <div>
+            <p>Legal</p>
+            <a href="./index.html#terms">Terms of service</a>
+            <a href="./index.html#privacy">Privacy policy</a>
+          </div>
+        </nav>
+      </div>
+      <div class="site-rubric-bottom">
+        <span>© 2026 AppContributor. All rights reserved.</span>
+        <span>support@appcontributor.com</span>
+      </div>
+    </footer>
+
+    <script src="./onboarding.js"></script>
+  </body>
+</html>

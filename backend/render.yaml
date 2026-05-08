@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: appcontributor-api
+    env: docker
+    plan: starter
+    autoDeploy: false
+    healthCheckPath: /api/health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: AUTH_COOKIE_SECURE
+        value: "1"
+      - key: AUTH_COOKIE_SAMESITE
+        value: none
+      - key: DATABASE_URL
+        sync: false
+      - key: CORS_ALLOW_ORIGINS
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_PUBLISHABLE_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: PAYPAL_WEBHOOK_TOKEN
+        sync: false

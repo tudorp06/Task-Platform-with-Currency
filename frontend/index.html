@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AppContributor</title>
+    <link rel="icon" type="image/png" href="./logo.png?v=2" />
+    <link rel="shortcut icon" href="./logo.png?v=2" />
+    <link rel="apple-touch-icon" href="./logo.png?v=2" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="navbar">
+      <a id="brand-link" class="brand-box" href="./index.html">
+        <img
+          class="brand-logo-image"
+          src="./logo.png?v=2"
+          alt="AppContributor logo"
+        />
+        <div class="brand-text">
+          <strong>AppContributor</strong>
+          <span class="brand-version-chip">BETA</span>
+        </div>
+      </a>
+      <div id="navbar-right" class="nav-actions"></div>
+    </header>
+
+    <main>
+      <section id="home" class="hero">
+        <div class="hero-copy">
+          <h1>Contribute to new apps.<br />Get paid for quality and creativity, not noise.</h1>
+          <p class="hero-subtitle">
+            Real tasks, real reviews, and real payouts. Fix problems, get feedback, and help startups grow, learn, and ship faster.
+          </p>
+          <div class="hero-actions">
+            <button class="btn hero-choice-btn hero-choice-primary" id="join-contributor">Continue as Contributor</button>
+            <button class="btn hero-choice-btn hero-choice-secondary" id="join-startup">Continue as Startup</button>
+          </div>
+        </div>
+        <aside class="hero-panel">
+          <h3>Live metrics</h3>
+          <div class="metric-row"><span>Today's average earnings</span><strong id="metric-avg-earnings">$0.00</strong></div>
+          <div class="metric-row"><span>Average review time</span><strong id="metric-review-hours">0.0h</strong></div>
+          <div class="metric-row"><span>Tasks approved today</span><strong id="metric-approved-today">0</strong></div>
+        </aside>
+      </section>
+
+      <section id="how-it-works" class="platform-manifest">
+        <p class="manifest-kicker">Why developers join AppContributor</p>
+        <h2>Earn real money from short, practical engineering tasks.</h2>
+        <p class="manifest-lead">
+          This platform is for people who care about coding and want real practice with real rewards, whether they are experienced, self-taught, or
+          just getting started.
+        </p>
+        <p class="manifest-text">
+          Tasks are short and practical: fix annoying bugs, improve features, clean up frontend flows, and solve backend issues. Good work gets paid
+          after review, and every payout is tracked clearly.
+        </p>
+      </section>
+
+      <section id="ways-to-earn" class="platform-manifest compact-manifest">
+        <p class="manifest-kicker">Who is it for?</p>
+        <div class="info-rubric-grid">
+          <article class="info-rubric-card">
+            <h3>Early builders are welcome</h3>
+            <p>
+              Whether you just finished high school, are taking coding courses, or do not yet have internships or college credentials, you can still
+              submit solutions. If your work is strong, you can even earn 50% or, even better, the full payout.
+            </p>
+          </article>
+          <article class="info-rubric-card">
+            <h3>Experienced contributors too</h3>
+            <p>
+              Engineers with production experience can fix annoying bugs, improve APIs, and polish product flows while helping startups grow, learn,
+              and ship faster.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="faqs" class="platform-manifest compact-manifest">
+        <p class="manifest-kicker">FAQs</p>
+        <div class="faq-list">
+          <div class="faq-item">
+            <h4>Who can join?</h4>
+            <p>Contributors and startup founders. Developer contribution rules are not esentially strict, which means beginners are welcome too if they can submit clear and solid solutions.</p>
+          </div>
+          <div class="faq-item">
+            <h4>How are payouts decided?</h4>
+            <p>By review results: approved, partially approved (50%), or rejected. Each result includes clear notes, AI checking and status.</p>
+          </div>
+          <div class="faq-item">
+            <h4>Can I resubmit the same task?</h4>
+            <p>No. One submission per contributor on a task.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-rubric-footer">
+      <div class="site-rubric-main">
+        <div class="site-rubric-brand">
+          <div class="site-rubric-logo-line">
+            <img src="./logo.png?v=2" alt="AppContributor logo" class="site-rubric-logo" />
+            <strong>AppContributor</strong>
+          </div>
+          <p class="site-rubric-summary">
+            A coding task marketplace where contributors solve real startup issues and get paid after review.
+          </p>
+        </div>
+
+        <nav class="site-rubric-links">
+          <div>
+            <p>Platform</p>
+            <a href="#home">Home</a>
+            <a href="#how-it-works">How it works</a>
+            <a href="#ways-to-earn">Ways to earn</a>
+            <a href="#faqs">FAQs</a>
+          </div>
+          <div>
+            <p>Account</p>
+            <a href="#" id="footer-signup-link">Sign up</a>
+            <a href="#" id="footer-login-link">Log in</a>
+            <a href="./dashboard.html">Dashboard</a>
+          </div>
+          <div>
+            <p>Legal</p>
+            <a href="#terms">Terms of service</a>
+            <a href="#privacy">Privacy policy</a>
+          </div>
+        </nav>
+      </div>
+
+      <div class="site-rubric-legal">
+        <p id="terms">
+          By using AppContributor, you agree to fair review rules, payout rules, and anti-fraud checks. Unauthorized data access, payment abuse, or
+          impersonation can lead to account removal.
+        </p>
+        <p id="privacy">
+          We only process the minimum account, review, and payout metadata needed to run the platform securely and to keep an audit trail for disputes.
+        </p>
+      </div>
+
+      <div class="site-rubric-bottom">
+        <span>© 2026 AppContributor. All rights reserved.</span>
+        <span>support@appcontributor.com</span>
+      </div>
+    </footer>
+
+    <div id="auth-modal" class="modal hidden" aria-hidden="true">
+      <div class="modal-card">
+        <h3>Sign in to AppContributor</h3>
+        <p id="auth-role-label" class="modal-subtitle">Continue as contributor.</p>
+        <div class="auth-mode-switch" role="tablist" aria-label="Authentication mode">
+          <button type="button" id="auth-mode-login" class="auth-mode-btn active" aria-selected="true">Sign in</button>
+          <button type="button" id="auth-mode-signup" class="auth-mode-btn" aria-selected="false">Create account</button>
+        </div>
+        <p id="auth-feedback" class="auth-feedback hidden" role="alert"></p>
+        <form id="auth-form">
+          <label>
+            Full name
+            <input id="input-name" type="text" placeholder="Alex Morgan" required />
+          </label>
+          <label>
+            Email
+            <input id="input-email" type="email" placeholder="you@example.com" required />
+          </label>
+          <label>
+            Password
+            <input id="input-password" type="password" minlength="8" placeholder="At least 8 characters" required />
+          </label>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-ghost" id="close-modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Sign in</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

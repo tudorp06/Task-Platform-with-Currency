@@ -1,0 +1,13 @@
+---
+description: Enforce premium spacing and layout consistency across frontend pages
+alwaysApply: true
+---
+
+# UI Spacing and Layout Consistency
+
+- Prioritize visual rhythm: use consistent vertical spacing between headings, notes, cards, and forms.
+- Center single-focus setup flows (e.g., onboarding/auth) with a clear max width and balanced whitespace.
+- Avoid awkward split headers where helper text is detached or misaligned; keep subtitle/support text visually grouped with its heading.
+- For every UI change, review nearby elements (header, body copy, controls, empty space, alignment) and optimize the whole section, not only one node.
+- Keep typography hierarchy explicit: strong headline font, readable body size, muted helper text, and consistent line-height.
+- Ensure responsive behavior preserves spacing quality on narrow widths (no crowded controls or drifting helper text).

@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+sqlalchemy
+alembic
+pydantic
+stripe
+python-dotenv
+sentry-sdk
+passlib[bcrypt]
+bcrypt
+python-multipart
