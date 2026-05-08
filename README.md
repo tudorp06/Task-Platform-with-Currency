@@ -46,16 +46,6 @@ AppContributor pays for **actual debugging and implementation work** that helps 
 
 ## Screenshots
 
-Add your app snaps to `assets/screenshots/` and keep these names:
-
-- `landing.png`
-- `tasks-marketplace.png`
-- `task-submission-modal.png`
-- `dashboard-contributor.png`
-- `dashboard-admin.png`
-
-Then GitHub will render them here:
-
 ### Landing
 ![Landing](./assets/screenshots/landing.png)
 
@@ -64,12 +54,6 @@ Then GitHub will render them here:
 
 ### Task submission
 ![Task submission](./assets/screenshots/task-submission-modal.png)
-
-### Contributor dashboard
-![Contributor dashboard](./assets/screenshots/dashboard-contributor.png)
-
-### Admin dashboard
-![Admin dashboard](./assets/screenshots/dashboard-admin.png)
 
 ---
 
