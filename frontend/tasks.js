@@ -4,6 +4,9 @@ const API_BASE_URL = "http://127.0.0.1:8000/api";
 const LAST_PAGE_KEY = "app_contributor_last_page";
 const SUBMISSIONS_DB_KEY = "app_contributor_submissions_db";
 const TASK_SHORTLIST_KEY = "app_contributor_task_shortlist";
+const THEME_KEY = "app_contributor_theme";
+const THEME_NEO_MINT = "neo-mint";
+const THEME_DARK_ACCENT = "dark-accent";
 
 const navbarRight = document.getElementById("navbar-right");
 const taskList = document.getElementById("task-list");
@@ -34,6 +37,39 @@ let pendingAttachments = [];
 const MAX_ATTACHMENTS = 5;
 const MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024;
 const ALLOWED_ATTACHMENT_EXTENSIONS = new Set([".py", ".pdf", ".txt", ".md", ".zip", ".png", ".jpg", ".jpeg"]);
+
+function currentTheme() {
+  const stored = localStorage.getItem(THEME_KEY);
+  return stored === THEME_DARK_ACCENT ? THEME_DARK_ACCENT : THEME_NEO_MINT;
+}
+
+function applyTheme(theme) {
+  const nextTheme = theme === THEME_DARK_ACCENT ? THEME_DARK_ACCENT : THEME_NEO_MINT;
+  document.body.dataset.theme = nextTheme;
+  localStorage.setItem(THEME_KEY, nextTheme);
+}
+
+function themeToggleLabel() {
+  return document.body.dataset.theme === THEME_DARK_ACCENT ? "Dark" : "Light";
+}
+
+function themeToggleMarkup() {
+  const isDark = document.body.dataset.theme === THEME_DARK_ACCENT;
+  return `<button class="theme-toggle-btn ${isDark ? "is-dark" : ""}" id="theme-toggle-btn" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
+    <span class="theme-toggle-track"></span>
+    <span class="theme-toggle-label">${themeToggleLabel()}</span>
+  </button>`;
+}
+
+function bindThemeToggle() {
+  const button = document.getElementById("theme-toggle-btn");
+  if (!button) return;
+  button.addEventListener("click", () => {
+    const next = document.body.dataset.theme === THEME_DARK_ACCENT ? THEME_NEO_MINT : THEME_DARK_ACCENT;
+    applyTheme(next);
+    renderNavbar();
+  });
+}
 
 function readCookie(name) {
   const target = `${name}=`;
@@ -158,11 +194,17 @@ function renderNavbar() {
   }
 
   navbarRight.innerHTML = `
+    ${themeToggleMarkup()}
     <a class="btn btn-ghost" href="./tasks.html">Tasks</a>
     <a class="btn btn-ghost" href="./dashboard.html">Dashboard</a>
     <button class="btn btn-ghost" id="logout-btn">Logout</button>
     <span class="chip"><img class="money-icon-img" src="./icon-wallet.svg" alt="" /> Balance: $${Number(session.balance).toFixed(2)}</span>
+    <a class="btn btn-ghost user-profile-btn" href="./dashboard.html" title="Open your profile">
+      <img class="user-icon-img" src="./icon-user.svg" alt="" />
+      Profile
+    </a>
   `;
+  bindThemeToggle();
   document.getElementById("logout-btn").addEventListener("click", async () => {
     try {
       const csrfToken = readCookie("appcontributor_csrf");
@@ -203,20 +245,16 @@ function renderTaskCards(tasks) {
         <div class="task-signal"></div>
         <div class="task-top">
           <p class="task-title">${task.title}</p>
-          <span class="task-tag">${task.type}</span>
+          <strong class="task-reward">$${Number(task.reward).toFixed(2)}</strong>
         </div>
-        <div class="task-studio-line">
-          <span class="startup-badge">${task.startup_name || "Startup App"}</span>
-          <span class="task-id-badge">${formatTaskId(task.id)}</span>
+        <div class="task-subline">
+          <span>${task.startup_name || "Startup App"} • ${task.type}</span>
+          <span>${formatTaskId(task.id)}</span>
         </div>
         <p class="task-summary">${task.summary}</p>
-        <div class="task-trust-line">
-          <span class="task-trust-badge">Verified brief</span>
-          <span class="task-fit-badge">Fit: ${fitScore(task)}</span>
-        </div>
         <div class="task-meta">
-          <span class="task-kpi">Reward <strong>$${Number(task.reward).toFixed(2)}</strong></span>
-          <span class="task-kpi">Slots <strong>${task.slots}</strong></span>
+          <span class="task-kpi">Slots: <strong>${task.slots}</strong></span>
+          <span class="task-kpi">Level: <strong>${fitScore(task)}</strong></span>
           <span class="status-pill ${statusClass(task.status)}">${statusLabel(task.status)}</span>
         </div>
         <div class="task-card-actions">
@@ -444,6 +482,7 @@ languageFilter.addEventListener("change", async (event) => {
   await renderTasks();
 });
 
+applyTheme(currentTheme());
 renderNavbar();
 sessionStorage.setItem(LAST_PAGE_KEY, "./tasks.html");
 setBrandLinkTarget();

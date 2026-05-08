@@ -8,6 +8,9 @@ const PAYOUT_METHODS_DB_KEY = "app_contributor_payout_methods_db";
 const PAYOUT_REQUESTS_DB_KEY = "app_contributor_payout_requests_db";
 const BALANCES_DB_KEY = "app_contributor_balances_db";
 const RECEIPTS_DB_KEY = "app_contributor_receipts_db";
+const THEME_KEY = "app_contributor_theme";
+const THEME_NEO_MINT = "neo-mint";
+const THEME_DARK_ACCENT = "dark-accent";
 
 const navbarRight = document.getElementById("navbar-right");
 const dashboardList = document.getElementById("dashboard-list");
@@ -69,6 +72,39 @@ const payoutRequestList = document.getElementById("payout-request-list");
 const receiptList = document.getElementById("receipt-list");
 let contributorPaymentMethods = [];
 const adminUserCollapsed = new Set();
+
+function currentTheme() {
+  const stored = localStorage.getItem(THEME_KEY);
+  return stored === THEME_DARK_ACCENT ? THEME_DARK_ACCENT : THEME_NEO_MINT;
+}
+
+function applyTheme(theme) {
+  const nextTheme = theme === THEME_DARK_ACCENT ? THEME_DARK_ACCENT : THEME_NEO_MINT;
+  document.body.dataset.theme = nextTheme;
+  localStorage.setItem(THEME_KEY, nextTheme);
+}
+
+function themeToggleLabel() {
+  return document.body.dataset.theme === THEME_DARK_ACCENT ? "Dark" : "Light";
+}
+
+function themeToggleMarkup() {
+  const isDark = document.body.dataset.theme === THEME_DARK_ACCENT;
+  return `<button class="theme-toggle-btn ${isDark ? "is-dark" : ""}" id="theme-toggle-btn" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
+    <span class="theme-toggle-track"></span>
+    <span class="theme-toggle-label">${themeToggleLabel()}</span>
+  </button>`;
+}
+
+function bindThemeToggle(session) {
+  const button = document.getElementById("theme-toggle-btn");
+  if (!button) return;
+  button.addEventListener("click", () => {
+    const next = document.body.dataset.theme === THEME_DARK_ACCENT ? THEME_NEO_MINT : THEME_DARK_ACCENT;
+    applyTheme(next);
+    renderNavbar(session);
+  });
+}
 
 function showActionFeedback(element, message, isError = false) {
   if (!element) return;
@@ -208,11 +244,17 @@ function getCurrentUserRecord(session) {
 function renderNavbar(session) {
   const tasksLink = session.role === "contributor" ? `<a class="btn btn-ghost" href="./tasks.html">Tasks</a>` : "";
   navbarRight.innerHTML = `
+    ${themeToggleMarkup()}
     ${tasksLink}
     <a class="btn btn-ghost" href="./dashboard.html">Dashboard</a>
     <button class="btn btn-ghost" id="logout-btn">Logout</button>
     <span class="chip"><img class="money-icon-img" src="./icon-wallet.svg" alt="" /> Balance: $${Number(session.balance).toFixed(2)}</span>
+    <a class="btn btn-ghost user-profile-btn" href="./dashboard.html" title="Open your profile">
+      <img class="user-icon-img" src="./icon-user.svg" alt="" />
+      Profile
+    </a>
   `;
+  bindThemeToggle(session);
   document.getElementById("logout-btn").addEventListener("click", async () => {
     try {
       const csrfToken = readCookie("appcontributor_csrf");
@@ -449,9 +491,9 @@ function renderDashboard(session) {
             const originalReward = Number(task?.reward ?? sub.taskReward ?? 0);
             const disputeAction =
               sub.status === "rejected" && !sub.dispute
-                ? `<button class="btn btn-ghost open-dispute-btn" data-submission-id="${sub.id}">Open dispute</button>`
+                ? `<button class="btn btn-ghost open-dispute-btn" data-submission-id="${sub.id}">Open contest</button>`
                 : sub.dispute
-                  ? `<span class="chip">Dispute: ${sub.dispute}</span>`
+                  ? `<span class="chip">Contest: ${sub.dispute}</span>`
                   : "";
             const reviewFeedback = sub.status === "rejected"
               ? `<div class="review-feedback critical">
@@ -468,7 +510,7 @@ function renderDashboard(session) {
                 : "";
             const disputeFeedback = sub.dispute
               ? `<div class="review-feedback ${sub.dispute === "rejected" ? "critical" : "positive"}">
-                   <p class="review-line"><strong>Dispute:</strong> ${statusLabel(sub.dispute)}</p>
+                   <p class="review-line"><strong>Contest:</strong> ${statusLabel(sub.dispute)}</p>
                    <p class="review-line"><strong>Your claim:</strong> ${sub.disputeReason || "No details provided"}</p>
                    ${sub.disputeAdminNote ? `<p class="review-line"><strong>Admin response:</strong> ${sub.disputeAdminNote}</p>` : ""}
                  </div>`
@@ -1051,7 +1093,7 @@ function renderAdminDisputes() {
 
   adminDisputeList.innerHTML =
     disputed.length === 0
-      ? `<div class="admin-item"><span>No open disputes.</span></div>`
+      ? `<div class="admin-item"><span>No open contests.</span></div>`
       : disputed
           .map((sub) => {
             return `
@@ -1059,11 +1101,11 @@ function renderAdminDisputes() {
         <div>
           <strong>Submission ${sub.id} • Task ${formatTaskId(sub.taskId)}</strong><br />
           <span>Contributor ${sub.contributorName || sub.contributorId}</span>
-          <span class="review-note"><strong>Dispute claim:</strong> ${sub.disputeReason || "No claim text"}</span>
+          <span class="review-note"><strong>Contest claim:</strong> ${sub.disputeReason || "No claim text"}</span>
           ${sub.reviewNote ? `<span class="review-note"><strong>Original review note:</strong> ${sub.reviewNote}</span>` : ""}
         </div>
         <div class="review-controls">
-          <input class="dispute-admin-note-input" data-submission-id="${sub.id}" placeholder="Admin dispute response note" />
+          <input class="dispute-admin-note-input" data-submission-id="${sub.id}" placeholder="Admin contest response note" />
           <button class="btn btn-primary dispute-uphold-btn" data-submission-id="${sub.id}">Uphold contributor</button>
           <button class="btn btn-ghost dispute-reject-btn" data-submission-id="${sub.id}">Keep original review</button>
         </div>
@@ -1080,7 +1122,7 @@ function renderAdminDisputes() {
       const noteInput = document.querySelector(`.dispute-admin-note-input[data-submission-id="${submissionId}"]`);
       target.dispute = "resolved";
       target.disputeResolvedAt = new Date().toISOString();
-      target.disputeAdminNote = noteInput?.value?.trim() || "Dispute accepted. Contributor's appeal was valid.";
+      target.disputeAdminNote = noteInput?.value?.trim() || "Contest accepted. Contributor's appeal was valid.";
       saveJson(SUBMISSIONS_DB_KEY, submissionsDb);
       renderAdminDisputes();
       renderAdminSubmissionReviews();
@@ -1096,7 +1138,7 @@ function renderAdminDisputes() {
       const noteInput = document.querySelector(`.dispute-admin-note-input[data-submission-id="${submissionId}"]`);
       target.dispute = "rejected";
       target.disputeResolvedAt = new Date().toISOString();
-      target.disputeAdminNote = noteInput?.value?.trim() || "Dispute reviewed. Original review decision stands.";
+      target.disputeAdminNote = noteInput?.value?.trim() || "Contest reviewed. Original review decision stands.";
       saveJson(SUBMISSIONS_DB_KEY, submissionsDb);
       renderAdminDisputes();
       renderAdminSubmissionReviews();
@@ -1600,7 +1642,7 @@ async function renderAdminAnalyticsOverview(session) {
 }
 
 function openDispute(submissionId) {
-  const note = window.prompt("Why are you opening this dispute?");
+  const note = window.prompt("Why are you opening this contest?");
   if (!note || note.trim().length < 5) return;
   const submissions = loadJson(SUBMISSIONS_DB_KEY, []);
   const target = submissions.find((item) => item.id === submissionId);
@@ -1618,6 +1660,7 @@ if (!session) {
 } else if (!session.profileCompleted) {
   window.location.href = session.role === "startup" ? "./startup-onboarding.html" : "./onboarding.html";
 } else {
+  applyTheme(currentTheme());
   renderNavbar(session);
   sessionStorage.setItem(LAST_PAGE_KEY, "./dashboard.html");
   setBrandLinkTarget(session);

@@ -804,169 +804,169 @@ SEED_TASKS = [
     },
     {
         "id": "PB-111",
-        "title": "Fix 422 validation errors on AI form submit",
+        "title": "Fix staging-only 422 validation on workflow form submit",
         "language": "TypeScript",
         "reward": 3.0,
         "slots": slots_for_reward(3.0),
         "status": "open",
-        "summary": "Users submit prompts but backend rejects payload shape.",
+        "summary": "Staging users submit prompts but backend rejects payload shape.",
         "description": (
             "PromptForge is a small AI workflow app where non-technical users build content pipelines from templates. "
-            "The team recently changed the form schema to support optional tone and audience fields in the UI. "
-            "Since that change, many users get a generic 'request failed' toast while the API returns 422 for malformed payloads. "
-            "Your task is to identify where the frontend payload diverges from backend expectations and implement a practical fix path. "
+            "A new schema rollout broke the staging form submit flow, returning 422 for malformed payloads. "
+            "Your task is restricted to staging behavior and schema alignment; do not touch production billing or auth code. "
+            "Implement the smallest safe fix path so startup QA can validate before any production promotion. "
             "A clear partial solution (for example fixing core required fields first) is acceptable."
         ),
-        "endpoints": "POST /api/workflows/run\nGET /api/workflows/schema",
-        "layout": "frontend/src/features/run-workflow/SubmitPanel.tsx\nbackend/api/workflows.py",
+        "endpoints": "POST /staging/api/workflows/run\nGET /staging/api/workflows/schema",
+        "layout": "frontend/src/features/run-workflow/SubmitPanel.tsx\nbackend/api/workflows_staging.py",
         "run_instructions": "npm run dev && uvicorn backend.main:app --reload",
     },
     {
         "id": "PB-112",
-        "title": "Stabilize OpenAI rate-limit fallback queue",
+        "title": "Stabilize staging OpenAI retry queue (non-production)",
         "language": "Python",
         "reward": 4.0,
         "slots": slots_for_reward(4.0),
         "status": "open",
-        "summary": "Retry queue duplicates jobs after 429 bursts.",
+        "summary": "Staging retry queue duplicates jobs after 429 bursts.",
         "description": (
             "ReplyPilot is an AI support assistant that drafts first responses for help-desk agents. "
-            "They implemented a queue worker that retries requests when the provider returns 429 rate-limit errors. "
-            "Under load spikes, some jobs are re-queued multiple times and a few users receive duplicate suggested replies. "
-            "Your task is to make retry handling safer with idempotency or deduping logic and keep the behavior observable in logs. "
+            "In staging, retry workers duplicate jobs during 429 bursts. "
+            "Your task is limited to staging worker logic and must not alter live traffic or production queue config. "
+            "Make retry handling safer with idempotency or deduping logic and keep behavior observable in logs. "
             "If you can only patch the most likely duplicate path first, that is still valuable."
         ),
-        "endpoints": "POST /api/replies/generate\nPOST /api/retries/process",
-        "layout": "backend/workers/retry_worker.py\nbackend/services/reply_service.py",
+        "endpoints": "POST /staging/api/replies/generate\nPOST /staging/api/retries/process",
+        "layout": "backend/workers/retry_worker_staging.py\nbackend/services/reply_service.py",
         "run_instructions": "python -m backend.workers.retry_worker",
     },
     {
         "id": "PB-113",
-        "title": "Prevent duplicate Stripe webhook credits",
+        "title": "Prevent duplicate credits in sandbox billing webhooks",
         "language": "Go",
         "reward": 5.0,
         "slots": slots_for_reward(5.0),
         "status": "open",
-        "summary": "Billing webhook can credit wallet more than once.",
+        "summary": "Sandbox billing webhook can credit wallet more than once.",
         "description": (
-            "BuildLane sells usage credits for a developer tool and many customers top up from the billing page. "
-            "The billing service already verifies webhook signatures and writes successful events to the database. "
-            "Support reports some users got credits twice when Stripe retried the same event during network instability. "
-            "Your task is to add robust idempotency checks around webhook processing and keep normal successful top-ups unchanged. "
+            "BuildLane sells usage credits for a developer tool and tests billing in Stripe sandbox mode. "
+            "Support reports sandbox users got credits twice when Stripe retried the same event during network instability. "
+            "Your task is to add idempotency checks around sandbox webhook processing only; production payout release remains out of scope. "
+            "Keep normal successful top-ups unchanged. "
             "A focused fix for duplicate-event handling is enough for initial approval."
         ),
-        "endpoints": "POST /billing/webhook/stripe\nGET /billing/wallet/:userId",
-        "layout": "services/billing/webhook_handler.go\nservices/billing/wallet_store.go",
+        "endpoints": "POST /billing/sandbox/webhook/stripe\nGET /billing/sandbox/wallet/:userId",
+        "layout": "services/billing/webhook_handler_sandbox.go\nservices/billing/wallet_store.go",
         "run_instructions": "go test ./... && go run ./cmd/billing-api",
     },
     {
         "id": "PB-114",
-        "title": "Fix React query stale cache after task update",
+        "title": "Fix staging board stale cache after task update",
         "language": "JavaScript",
         "reward": 2.5,
         "slots": slots_for_reward(2.5),
         "status": "open",
-        "summary": "UI still shows old task state after save.",
+        "summary": "Staging UI still shows old task state after save.",
         "description": (
             "SprintMint is a planning app where product teams update small engineering tasks and priorities in real time. "
-            "The frontend uses React Query and optimistic updates to keep the board responsive after edits. "
-            "Users now report that cards often revert to old values until a full hard refresh, especially after quick consecutive edits. "
-            "Your task is to trace the stale-cache path and apply a clean invalidation or merge strategy that keeps UI state trustworthy. "
+            "The staging frontend uses React Query and optimistic updates, but cards revert to old values until hard refresh. "
+            "Your task is to trace the stale-cache path and apply a safe invalidation or merge strategy in staging. "
+            "Do not modify production deploy settings or live data migrations. "
             "A partial fix targeting the most common update flow is still useful."
         ),
-        "endpoints": "PATCH /api/tasks/:id\nGET /api/tasks",
+        "endpoints": "PATCH /staging/api/tasks/:id\nGET /staging/api/tasks",
         "layout": "frontend/src/features/tasks/hooks/useTaskMutations.js\nfrontend/src/features/tasks/TaskBoard.jsx",
         "run_instructions": "npm run dev",
     },
     {
         "id": "PB-115",
-        "title": "Repair SQL migration breaking nullable profile fields",
+        "title": "Repair staging SQL migration for nullable profile fields",
         "language": "Database",
         "reward": 3.5,
         "slots": slots_for_reward(3.5),
         "status": "open",
-        "summary": "Migration fails on production rows with null bios.",
+        "summary": "Migration fails on staging rows with null bios.",
         "description": (
             "CreatorNest is an AI portfolio platform where users publish project pages generated from prompts and manual edits. "
-            "The team shipped a migration to split profile metadata into a new table and add stricter constraints. "
-            "Production rollout failed because legacy rows have null values that violate the new schema assumptions. "
-            "Your task is to design a safe migration sequence (or rollback + forward plan) that handles existing null data without losing profiles. "
+            "A staging migration that splits profile metadata into a new table fails because legacy rows have null values. "
+            "Your task is to design a safe migration sequence in staging (or rollback + forward plan) that handles null data without profile loss. "
+            "Production migration execution is explicitly out of scope. "
             "Even if you only provide a safe phased migration with SQL snippets, that can be approved."
         ),
-        "endpoints": "N/A (migration task)",
-        "layout": "backend/db/migrations/2026_05_profile_refactor.sql",
+        "endpoints": "N/A (staging migration task)",
+        "layout": "backend/db/migrations/staging/2026_05_profile_refactor.sql",
         "run_instructions": "alembic upgrade head",
     },
     {
         "id": "PB-116",
-        "title": "Fix CORS preflight blocked on contributor submit",
+        "title": "Fix staging CORS preflight blocked on contributor submit",
         "language": "JavaScript",
         "reward": 2.0,
         "slots": slots_for_reward(2.0),
         "status": "open",
-        "summary": "OPTIONS request fails before submission reaches API.",
+        "summary": "Staging OPTIONS request fails before submission reaches API.",
         "description": (
             "TaskBloom is a lightweight contributor portal used by startup founders to collect fast technical fixes. "
-            "The frontend app is hosted on a different domain than the API and submission calls now fail in-browser. "
-            "Users see a network error even though the backend endpoint is healthy when tested directly with curl. "
-            "Your task is to fix CORS/preflight handling so normal browser submissions work again without weakening security too much. "
+            "The staging frontend is hosted on a different domain than the staging API and submissions fail in-browser. "
+            "Users see a network error even though the endpoint is healthy with curl. "
+            "Your task is to fix staging CORS/preflight handling without weakening security. "
             "A practical first fix that unblocks the main submit path is acceptable."
         ),
-        "endpoints": "OPTIONS /api/submissions\nPOST /api/submissions",
-        "layout": "backend/main.py\nfrontend/src/api/client.js",
+        "endpoints": "OPTIONS /staging/api/submissions\nPOST /staging/api/submissions",
+        "layout": "backend/main_staging.py\nfrontend/src/api/client.js",
         "run_instructions": "npm run dev && uvicorn backend.main:app --reload",
     },
     {
         "id": "PB-117",
-        "title": "Handle missing OPENAI_API_KEY without crashing app",
+        "title": "Handle missing OPENAI_API_KEY in staging without crash",
         "language": "Python",
         "reward": 1.5,
         "slots": slots_for_reward(1.5),
         "status": "open",
-        "summary": "App boots with traceback when env variable is absent.",
+        "summary": "Staging app boots with traceback when env variable is absent.",
         "description": (
             "IdeaMate helps founders brainstorm product plans with AI-generated outlines and user stories. "
-            "New users self-hosting the project often forget to set OPENAI_API_KEY in their environment. "
-            "The server currently crashes during startup instead of showing a clear configuration error or graceful fallback. "
-            "Your task is to add defensive config handling and a friendly error path so setup issues are understandable. "
+            "The staging app crashes during startup when OPENAI_API_KEY is missing. "
+            "Your task is to add defensive config handling and friendly error messaging in staging mode only. "
+            "Do not change production secret managers or release pipelines. "
             "Even a partial patch that improves startup messaging and avoids hard crashes can be approved."
         ),
-        "endpoints": "GET /api/health\nPOST /api/ideas/generate",
-        "layout": "backend/config/settings.py\nbackend/services/llm_client.py",
+        "endpoints": "GET /staging/api/health\nPOST /staging/api/ideas/generate",
+        "layout": "backend/config/settings.py\nbackend/services/llm_client_staging.py",
         "run_instructions": "python -m backend.app",
     },
     {
         "id": "PB-118",
-        "title": "Fix 401 on profile fetch due to auth header format",
+        "title": "Fix staging 401 on profile fetch due to auth header format",
         "language": "TypeScript",
         "reward": 2.0,
         "slots": slots_for_reward(2.0),
         "status": "open",
-        "summary": "Token exists but API rejects malformed Authorization header.",
+        "summary": "Staging token exists but API rejects malformed Authorization header.",
         "description": (
             "CrewBoard is an internal ops app where contributors track accepted tasks and weekly payouts. "
-            "After a recent frontend refactor, many users are logged in but profile requests return 401. "
-            "QA found tokens in local storage, yet backend logs suggest the Authorization header format is wrong in some flows. "
-            "Your task is to normalize auth header handling and confirm profile requests remain authenticated after refresh. "
+            "After a recent frontend refactor, staging profile requests return 401 for logged-in users. "
+            "QA found tokens in local storage, yet backend logs suggest malformed Authorization headers in some flows. "
+            "Your task is to normalize header handling in staging and confirm profile requests remain authenticated after refresh. "
             "A focused fix for the most common login path is still useful."
         ),
-        "endpoints": "POST /api/auth/login\nGET /api/me",
+        "endpoints": "POST /staging/api/auth/login\nGET /staging/api/me",
         "layout": "frontend/src/auth/session.ts\nfrontend/src/api/http.ts",
         "run_instructions": "npm run dev",
     },
     {
         "id": "PB-119",
-        "title": "Correct cron timezone for daily payout summary",
+        "title": "Correct internal cron timezone for daily payout summary",
         "language": "Go",
         "reward": 2.5,
         "slots": slots_for_reward(2.5),
         "status": "open",
-        "summary": "Daily report runs at wrong local hour for admins.",
+        "summary": "Internal daily report runs at wrong local hour for admins.",
         "description": (
-            "PayOrbit sends founders a daily payout summary so they can review approved submissions and pending disputes. "
-            "The team scheduled a cron job expecting it to run at 18:00 local business time each day. "
-            "In production it runs several hours off because the server timezone and app timezone assumptions are mismatched. "
-            "Your task is to correct scheduling behavior and document the chosen timezone strategy clearly. "
+            "PayOrbit sends founders a daily payout summary from an internal reporting worker. "
+            "The team scheduled a cron job expecting 18:00 local business time, but it runs hours off due to timezone mismatch. "
+            "Your task is to correct worker scheduling behavior and document the timezone strategy in internal docs. "
+            "No production infra changes should be performed in this task. "
             "A straightforward and testable fix to align execution time is enough."
         ),
         "endpoints": "N/A (scheduled worker)",
@@ -975,112 +975,113 @@ SEED_TASKS = [
     },
     {
         "id": "PB-120",
-        "title": "Guard JSON parsing for malformed webhook payload",
+        "title": "Guard sandbox webhook JSON parsing for malformed payload",
         "language": "Node.js",
         "reward": 2.0,
         "slots": slots_for_reward(2.0),
         "status": "open",
-        "summary": "Webhook endpoint throws when body is invalid JSON.",
+        "summary": "Sandbox webhook endpoint throws when body is invalid JSON.",
         "description": (
             "SignalDock aggregates event callbacks from third-party tools and forwards them to startup dashboards. "
-            "A partner integration occasionally sends malformed JSON bodies that currently crash the webhook handler path. "
-            "This creates noisy logs and sometimes delays processing of valid events arriving right after bad ones. "
-            "Your task is to add safer parsing/error responses and keep valid events processing normally. "
+            "A partner integration occasionally sends malformed JSON to the sandbox webhook path, crashing the handler. "
+            "This creates noisy logs and sometimes delays valid events arriving right after bad ones. "
+            "Your task is to add safer parsing/error responses for sandbox webhooks and keep valid events processing normally. "
             "A minimal but robust guard around parse failures is acceptable for approval."
         ),
-        "endpoints": "POST /webhooks/events",
-        "layout": "api/routes/webhooks.js\napi/middleware/rawBodyParser.js",
+        "endpoints": "POST /sandbox/webhooks/events",
+        "layout": "api/routes/webhooks_sandbox.js\napi/middleware/rawBodyParser.js",
         "run_instructions": "npm run start:api",
     },
     {
         "id": "PB-121",
-        "title": "Teach junior dev Python fundamentals for API work",
+        "title": "Create staging seed-data reset script for QA",
         "language": "Python",
         "reward": 1.5,
         "slots": slots_for_reward(1.5),
         "status": "open",
-        "summary": "Create a practical beginner guide for core Python concepts used in backend tasks.",
+        "summary": "Build a safe script to reset and re-seed staging data for QA cycles.",
         "description": (
-            "NovaBoard is a startup building an internal operations backend and one developer is productive with vibe coding tools "
-            "but lacks confidence in Python basics. The founders want this person to become useful on real tickets, not just copy snippets. "
-            "Your task is to provide a concise learning path with examples for variables, control flow, functions, list/dict usage, and debugging habits. "
-            "You can include short exercises and explanations tied to typical API code, even if you do not provide a full course."
+            "NovaBoard is a startup building an internal operations backend. "
+            "QA needs a one-command way to reset staging data before regression runs. "
+            "Your task is to add a safe staging-only seed/reset script and basic logging for what records are recreated. "
+            "The script must never point to production databases. "
+            "A practical script with guard checks is enough for approval."
         ),
-        "endpoints": "N/A (mentoring / learning task)",
-        "layout": "docs/onboarding/python_basics.md",
-        "run_instructions": "N/A",
+        "endpoints": "N/A (internal script)",
+        "layout": "backend/scripts/reset_staging_data.py\nbackend/scripts/seed_staging_data.py",
+        "run_instructions": "python backend/scripts/reset_staging_data.py --env staging",
     },
     {
         "id": "PB-122",
-        "title": "Explain async/await to non-advanced JS contributor",
+        "title": "Add internal admin CSV export for staging support tickets",
         "language": "JavaScript",
         "reward": 2.0,
         "slots": slots_for_reward(2.0),
         "status": "open",
-        "summary": "Write a simple, production-relevant explanation of async flow and promises.",
+        "summary": "Create CSV export endpoint used by internal support tooling only.",
         "description": (
-            "PulseDesk is building a support dashboard and one frontend contributor can style UI but gets blocked by async JavaScript errors. "
-            "The team keeps seeing misuse of await, missing try/catch, and unresolved promise handling. "
-            "Your task is to explain async/await with practical mini examples from API calls and form submits, including common mistakes and how to avoid them. "
-            "A clear explanation document with simple code snippets is enough for approval."
+            "PulseDesk is building an internal support dashboard and ops needs quick CSV exports from staging ticket data. "
+            "Your task is to add a simple internal endpoint and frontend button for CSV export with date-range filters. "
+            "This is internal tooling only and should not expose customer PII fields beyond what support already sees. "
+            "A clean staging/internal implementation is enough for approval."
         ),
-        "endpoints": "GET /api/tickets\nPOST /api/tickets",
-        "layout": "frontend/docs/async_guide.md\nfrontend/src/api/client.js",
+        "endpoints": "GET /internal/staging/tickets/export.csv",
+        "layout": "frontend/src/features/support/ExportButton.jsx\nbackend/api/internal_exports.py",
         "run_instructions": "npm run dev",
     },
     {
         "id": "PB-123",
-        "title": "Code reading walkthrough: how this FastAPI file works",
+        "title": "Add feature-flag guard for staging experimental UI block",
         "language": "Python",
         "reward": 2.5,
         "slots": slots_for_reward(2.5),
         "status": "open",
-        "summary": "Break down one backend file line-by-line for a junior contributor.",
+        "summary": "Prevent accidental exposure of staging experiments to non-test users.",
         "description": (
-            "ShipNest has a small backend team and a new dev can run code but struggles to understand project structure and request flow. "
-            "Founders want a readable walkthrough of one existing FastAPI route file: what imports do, how validation works, and where business logic should live. "
-            "Your task is to produce a practical explanation with comments and structure map so the junior can start making safe edits. "
-            "A focused walkthrough of one file with actionable notes is acceptable."
+            "ShipNest is testing an experimental UI block in staging. "
+            "The team wants strict feature-flag checks so only whitelisted QA users can access it. "
+            "Your task is to add robust guard logic and fallback rendering, with no impact to production release toggles. "
+            "A focused implementation with clear flag checks is enough."
         ),
-        "endpoints": "GET /api/health\nGET /api/tasks",
-        "layout": "backend/api_server.py",
-        "run_instructions": "uvicorn backend.api_server:app --reload",
+        "endpoints": "GET /staging/api/feature-flags\nGET /staging/dashboard",
+        "layout": "backend/services/feature_flags.py\nfrontend/src/features/experiments/ExperimentalBlock.tsx",
+        "run_instructions": "npm run dev && uvicorn backend.main:app --reload",
     },
     {
         "id": "PB-124",
-        "title": "Design a beginner-safe Git workflow for startup devs",
+        "title": "Fix internal webhook replay tool duplicate-send behavior",
         "language": "Shell",
         "reward": 1.0,
         "slots": slots_for_reward(1.0),
         "status": "open",
-        "summary": "Provide simple branch/commit/PR rules for inexperienced contributors.",
+        "summary": "Internal replay script sends duplicates during batch retries.",
         "description": (
-            "CraftPilot has mixed-seniority developers and one contributor keeps pushing confusing commits directly without safe review flow. "
-            "The founders need a lightweight Git playbook that junior devs can follow without blocking shipping speed. "
-            "Your task is to draft a practical step-by-step workflow: branch naming, commit style, pull request checklist, and rollback basics. "
-            "A concise operational guide with examples is enough."
+            "CraftPilot has an internal webhook replay helper used by support engineers in staging. "
+            "Under retry mode, the script occasionally resends the same event IDs more than once. "
+            "Your task is to add dedupe protection and clear terminal output so support can trust replay batches. "
+            "No live production event replays should be touched in this task."
         ),
-        "endpoints": "N/A",
-        "layout": "docs/dev-workflow/git_playbook.md",
-        "run_instructions": "N/A",
+        "endpoints": "N/A (internal CLI tool)",
+        "layout": "tools/replay_webhooks.sh\ntools/lib/event_batch_utils.sh",
+        "run_instructions": "bash tools/replay_webhooks.sh --env staging --dry-run",
     },
     {
         "id": "PB-125",
-        "title": "Explain SQL joins with examples from our product schema",
+        "title": "Create staging smoke-test checklist for login + task submit",
         "language": "SQL",
         "reward": 2.0,
         "slots": slots_for_reward(2.0),
         "status": "open",
-        "summary": "Teach INNER/LEFT joins with product-relevant query examples.",
+        "summary": "Provide repeatable smoke script/checklist for core staging paths.",
         "description": (
-            "LedgerLoop has a product dev who can write simple selects but cannot reason about joins between users, tasks, and submissions tables. "
-            "This creates wrong reports and duplicated rows in dashboards. "
-            "Your task is to explain join types using the startup schema and include examples of common mistakes and corrected queries. "
-            "Clear educational explanations with runnable SQL snippets are sufficient."
+            "LedgerLoop needs a lightweight but repeatable staging smoke test routine before each release candidate. "
+            "The checklist should cover login, task browsing, submission creation, and admin review sanity checks. "
+            "Your task is to produce a practical script or markdown checklist that QA can run in 10-15 minutes. "
+            "This is staging/internal quality assurance only."
         ),
-        "endpoints": "N/A (query guidance task)",
-        "layout": "backend/db/schema.sql\ndocs/sql/joins_basics.md",
-        "run_instructions": "sqlite3 backend/appcontributor.db",
+        "endpoints": "POST /staging/api/auth/login\nPOST /staging/api/submissions",
+        "layout": "docs/qa/staging_smoke_checklist.md\nbackend/scripts/workflow_smoke.py",
+        "run_instructions": "python backend/scripts/workflow_smoke.py --api-base http://127.0.0.1:8000/api",
     },
 ]
 

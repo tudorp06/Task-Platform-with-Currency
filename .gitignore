@@ -1,0 +1,22 @@
+# Environment files (never commit secrets)
+**/.env
+**/.env.*
+!**/.env.example
+
+# Local Python virtual environments
+**/.venv/
+**/__pycache__/
+**/*.pyc
+
+# Local tool/runtime outputs
+agent-tools/
+terminals/
+assets/
+
+# Sensitive/internal markdown docs
+MONETIZATION_PLAN.md
+FEEDBACK_RECORD.md
+DEPLOY_FREE_DOMAIN.md
+ROADMAP.md
+BETA_RELEASE_RUNBOOK.md
+PRIVACY_SECURITY_CHECKLIST.md
