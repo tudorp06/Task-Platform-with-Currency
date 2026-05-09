@@ -1,0 +1,16 @@
+---
+description: Avoid duplicate information across UI chips/cards
+alwaysApply: true
+---
+
+# UI No-Duplicate Information Rule
+
+- Do not repeat the same data in multiple UI elements with different styles (for example, top line + chip + badge).
+- For dense cards (task cards, dashboard cards, modal summaries), each data point must appear once in the same section.
+- If a value is already shown in a highlighted chip, do not also show it in subtitle text.
+- Before shipping UI updates, check nearby chips/cards and remove redundant fields.
+
+## Example
+
+- Bad: `Python` in subtitle and `Language: Python` chip.
+- Good: keep `Language: Python` only once in the metadata chips.

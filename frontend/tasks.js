@@ -47,7 +47,7 @@ function readCookie(name) {
 
 function loadShortlist() {
   try {
-    const raw = sessionStorage.getItem(TASK_SHORTLIST_KEY);
+    const raw = localStorage.getItem(TASK_SHORTLIST_KEY) || sessionStorage.getItem(TASK_SHORTLIST_KEY);
     const parsed = raw ? JSON.parse(raw) : [];
     shortlistedTasks = new Set(Array.isArray(parsed) ? parsed : []);
   } catch {
@@ -56,7 +56,9 @@ function loadShortlist() {
 }
 
 function saveShortlist() {
-  sessionStorage.setItem(TASK_SHORTLIST_KEY, JSON.stringify(Array.from(shortlistedTasks)));
+  const payload = JSON.stringify(Array.from(shortlistedTasks));
+  localStorage.setItem(TASK_SHORTLIST_KEY, payload);
+  sessionStorage.setItem(TASK_SHORTLIST_KEY, payload);
 }
 
 function fitScore(task) {
@@ -249,7 +251,6 @@ function renderTaskCards(tasks) {
               ? `<span class="task-kpi task-kpi-lang"><img class="task-inline-icon" src="./icon-payout.svg" alt="" />Language: <strong>${derivedLanguage}</strong></span>`
               : ""
           }
-          <span class="task-kpi"><img class="task-inline-icon" src="./icon-review.svg" alt="" />Level: <strong>${fitScore(task)}</strong></span>
           <span class="status-pill ${statusClass(task.status)}">${statusLabel(task.status)}</span>
         </div>
         <div class="task-card-actions">

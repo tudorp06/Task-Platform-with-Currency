@@ -4,6 +4,7 @@ const USERS_DB_KEY = "app_contributor_users_db";
 const SUBMISSIONS_DB_KEY = "app_contributor_submissions_db";
 const TASKS_DB_KEY = "app_contributor_tasks_db";
 const LAST_PAGE_KEY = "app_contributor_last_page";
+const TASK_SHORTLIST_KEY = "app_contributor_task_shortlist";
 const PAYOUT_METHODS_DB_KEY = "app_contributor_payout_methods_db";
 const PAYOUT_REQUESTS_DB_KEY = "app_contributor_payout_requests_db";
 const BALANCES_DB_KEY = "app_contributor_balances_db";
@@ -48,6 +49,7 @@ const startupTaskDetails = document.getElementById("startup-task-details");
 const startupTaskRules = document.getElementById("startup-task-rules");
 const startupTaskPublishHint = document.getElementById("startup-task-publish-hint");
 const userProfileCard = document.getElementById("user-profile-card");
+const shortlistList = document.getElementById("shortlist-list");
 const brandLink = document.getElementById("brand-link");
 const walletSummary = document.getElementById("wallet-summary");
 const paymentMethodForm = document.getElementById("payment-method-form");
@@ -496,6 +498,58 @@ function renderDashboard(session) {
   document.querySelectorAll(".open-dispute-btn").forEach((button) => {
     button.addEventListener("click", () => openDispute(button.dataset.submissionId));
   });
+
+  renderShortlistedTasks(session);
+}
+
+async function renderShortlistedTasks(session) {
+  if (!shortlistList) return;
+  let shortlistIds = [];
+  try {
+    const raw = localStorage.getItem(TASK_SHORTLIST_KEY) || sessionStorage.getItem(TASK_SHORTLIST_KEY) || "[]";
+    const parsed = JSON.parse(raw);
+    shortlistIds = Array.isArray(parsed) ? parsed : [];
+  } catch {
+    shortlistIds = [];
+  }
+
+  if (!shortlistIds.length) {
+    shortlistList.innerHTML = `<div class="admin-item"><span>No shortlisted tasks yet. Use "Shortlist" in Task Marketplace.</span></div>`;
+    return;
+  }
+
+  let tasks = [];
+  try {
+    const response = await fetch(`${API_BASE_URL}/tasks`);
+    if (response.ok) {
+      tasks = await response.json();
+    }
+  } catch {
+    tasks = [];
+  }
+  if (!tasks.length) {
+    tasks = loadJson(TASKS_DB_KEY, []);
+  }
+  const taskById = new Map(tasks.map((task) => [String(task.id), task]));
+  const shortlisted = shortlistIds
+    .map((id) => taskById.get(String(id)))
+    .filter(Boolean);
+
+  shortlistList.innerHTML =
+    shortlisted.length === 0
+      ? `<div class="admin-item"><span>Shortlisted tasks were not found in the current catalog.</span></div>`
+      : shortlisted
+          .map(
+            (task) => `
+      <div class="admin-item">
+        <div>
+          <strong>${escapeHtml(task.title || String(task.id))}</strong><br />
+          <span>${escapeHtml(task.startup_name || "Startup App")} • Language: ${escapeHtml(task.language || "Set by startup")} • Reward: $${Number(task.reward || 0).toFixed(2)}</span>
+        </div>
+        <a class="btn btn-ghost" href="./tasks.html">Open in Tasks</a>
+      </div>`
+          )
+          .join("");
 }
 
 function methodLabel(method) {

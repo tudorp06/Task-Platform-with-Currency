@@ -40,6 +40,12 @@
         <div id="user-profile-card" class="card profile-card"></div>
 
         <div class="section-head section-head-spaced">
+          <h2><img class="ui-icon-img" src="./icon-wallet.svg" alt="" />Shortlisted Tasks</h2>
+          <span class="section-note">Tasks you saved from the marketplace.</span>
+        </div>
+        <div id="shortlist-list" class="admin-list"></div>
+
+        <div class="section-head section-head-spaced">
           <h2><img class="ui-icon-img" src="./icon-review.svg" alt="" />Submissions</h2>
         </div>
         <div class="submission-focus-section">
@@ -85,7 +91,7 @@
                 Billing email
                 <input id="card-email-input" type="email" autocomplete="email" placeholder="billing@yourcompany.com" />
               </label>
-              <p class="section-note secure-note">Card data is validated and immediately tokenized. Full number and CVV are not stored.</p>
+              <p class="section-note secure-note">Card data is validated and immediately tokenized. Full number and CVV are not stored. Use Stripe test cards (for example 4242 4242 4242 4242) while testing.</p>
               <button type="submit" class="btn btn-primary">Save secure method</button>
             </form>
             <div id="payment-method-list" class="admin-list"></div>
