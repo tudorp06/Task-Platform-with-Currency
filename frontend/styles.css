@@ -47,8 +47,8 @@ body {
 .brand-box {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 0;
+  gap: 16px;
+  padding: 4px 0;
   margin: 0;
   min-width: 0;
   max-width: min(100%, 420px);
@@ -62,9 +62,9 @@ body {
 }
 
 .brand-logo-image {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
   object-fit: contain;
   border: none;
   background: transparent;
@@ -77,30 +77,38 @@ body {
   display: flex;
   align-items: flex-start;
   flex-direction: column;
-  gap: 6px;
+  justify-content: center;
+  gap: 10px;
+  padding: 2px 0 0;
+  min-width: 0;
 }
 
 .brand-text strong {
   font-family: "Plus Jakarta Sans", Inter, "Segoe UI", sans-serif;
   font-size: 26px;
-  line-height: 1;
-  letter-spacing: -0.02em;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  margin: 0;
+  padding: 0;
+  display: block;
 }
 
 .brand-version-chip {
   display: inline-flex;
   align-items: center;
-  padding: 5px 10px;
+  justify-content: center;
+  padding: 6px 14px;
   border-radius: 999px;
   font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: #ffffff;
   background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
   border: 1px solid rgba(124, 58, 237, 0.28);
   white-space: nowrap;
-  margin-left: 2px;
+  margin: 0;
+  line-height: 1.2;
 }
 
 .nav-actions {
@@ -419,10 +427,12 @@ h1 {
 }
 
 .site-rubric-logo {
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
-  border: 1px solid #d3e3fa;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: none;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .site-rubric-logo-line strong {
@@ -1592,16 +1602,28 @@ textarea:focus {
 
   .brand-box {
     max-width: 100%;
-    gap: 8px;
+    gap: 12px;
+    padding: 2px 0;
   }
 
   .brand-logo-image {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .brand-text {
+    gap: 8px;
+    padding: 1px 0 0;
   }
 
   .brand-text strong {
     font-size: 22px;
+    line-height: 1.22;
+  }
+
+  .brand-version-chip {
+    padding: 5px 12px;
+    letter-spacing: 0.05em;
   }
 
   h1 {
