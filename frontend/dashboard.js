@@ -9,7 +9,7 @@ const PAYOUT_METHODS_DB_KEY = "app_contributor_payout_methods_db";
 const PAYOUT_REQUESTS_DB_KEY = "app_contributor_payout_requests_db";
 const BALANCES_DB_KEY = "app_contributor_balances_db";
 const RECEIPTS_DB_KEY = "app_contributor_receipts_db";
-const API_BASE_URL = "https://your-render-service.onrender.com/api";
+const API_BASE_URL = "https://appcontributor-backend.onrender.com/api";
 
 const navbarRight = document.getElementById("navbar-right");
 const dashboardList = document.getElementById("dashboard-list");
