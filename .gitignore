@@ -12,6 +12,13 @@
 agent-tools/
 terminals/
 assets/
+!assets/
+!assets/screenshots/
+!assets/screenshots/.gitkeep
+!assets/screenshots/*.png
+!assets/screenshots/*.jpg
+!assets/screenshots/*.jpeg
+!assets/screenshots/*.webp
 
 # Sensitive/internal markdown docs
 MONETIZATION_PLAN.md
