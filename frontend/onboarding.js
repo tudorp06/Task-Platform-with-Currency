@@ -1,6 +1,7 @@
 const SESSION_KEY = "app_contributor_session";
 const USERS_DB_KEY = "app_contributor_users_db";
 const AUTH_TOKEN_KEY = "app_contributor_auth_token";
+const API_BASE_URL = "https://appcontributor-backend.onrender.com/api";
 
 const navbarRight = document.getElementById("navbar-right");
 const onboardingForm = document.getElementById("onboarding-form");
@@ -52,7 +53,7 @@ function readCookie(name) {
 async function markProfileCompleted() {
   const token = sessionStorage.getItem(AUTH_TOKEN_KEY) || "";
   const csrfToken = readCookie("appcontributor_csrf");
-  const response = await fetch("http://127.0.0.1:8000/api/auth/profile-complete", {
+  const response = await fetch(`${API_BASE_URL}/auth/profile-complete`, {
     method: "PATCH",
     credentials: "include",
     headers: {

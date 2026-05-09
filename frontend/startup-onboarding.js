@@ -1,6 +1,6 @@
 const SESSION_KEY = "app_contributor_session";
 const AUTH_TOKEN_KEY = "app_contributor_auth_token";
-const API_BASE_URL = "http://127.0.0.1:8000/api";
+const API_BASE_URL = "https://appcontributor-backend.onrender.com/api";
 
 const navbarRight = document.getElementById("navbar-right");
 const form = document.getElementById("startup-onboarding-form");
