@@ -34,8 +34,9 @@ body {
   position: sticky;
   top: 0;
   z-index: 5;
-  height: 88px;
-  padding: 0 22px;
+  min-height: 104px;
+  height: auto;
+  padding: 12px 22px;
   border-bottom: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.96);
   display: flex;
@@ -62,9 +63,9 @@ body {
 }
 
 .brand-logo-image {
-  width: 56px;
-  height: 56px;
-  border-radius: 14px;
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
   object-fit: contain;
   border: none;
   background: transparent;
@@ -433,8 +434,8 @@ h1 {
 }
 
 .site-rubric-logo {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   border-radius: 8px;
   border: none;
   object-fit: contain;
@@ -1612,8 +1613,8 @@ textarea:focus {
   }
 
   .brand-logo-image {
-    width: 48px;
-    height: 48px;
+    width: 60px;
+    height: 60px;
   }
 
   .brand-text {
