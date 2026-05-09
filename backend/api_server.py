@@ -692,6 +692,11 @@ async def csrf_protect_mutations(request: Request, call_next):
             origin = request.headers.get("origin", "").strip()
             if origin and origin not in CORS_ALLOW_ORIGINS:
                 return Response(status_code=403, content="Invalid origin")
+            # If explicit auth header token is present, the request is not CSRF-able in the same way as cookie auth.
+            auth_header = request.headers.get("authorization", "").strip()
+            x_auth_header = request.headers.get("x-auth-token", "").strip()
+            if auth_header.lower().startswith("bearer ") or x_auth_header:
+                return await call_next(request)
             cookie_session = request.cookies.get(AUTH_COOKIE_NAME, "").strip()
             if cookie_session:
                 csrf_cookie = request.cookies.get(AUTH_CSRF_COOKIE_NAME, "").strip()
