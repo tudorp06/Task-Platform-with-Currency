@@ -154,6 +154,36 @@ main {
   letter-spacing: -0.02em;
 }
 
+.page-intro-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.task-title-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid #bcded9;
+  background: linear-gradient(180deg, #ffffff 0%, #eefaf7 100%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 12px rgba(15, 68, 86, 0.1);
+}
+
+.task-title-logo img {
+  width: 18px !important;
+  min-width: 18px;
+  max-width: 18px;
+  height: 18px !important;
+  min-height: 18px;
+  max-height: 18px;
+  display: block;
+  object-fit: contain;
+  opacity: 0.88;
+}
+
 .page-intro p {
   margin: 0;
   color: #526886;
@@ -742,6 +772,14 @@ h1 {
   font-size: 13px;
 }
 
+.task-inline-icon {
+  width: 13px;
+  height: 13px;
+  margin-right: 5px;
+  vertical-align: -1px;
+  opacity: 0.86;
+}
+
 .task-meta {
   display: flex;
   gap: 10px;
@@ -766,6 +804,24 @@ h1 {
 
 .task-kpi {
   color: #2d4568;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #f4f8ff;
+  border: 1px solid #dce7fb;
+}
+
+.task-kpi-highlight {
+  background: #eafaf6;
+  border-color: #b9e6dc;
+  color: #145b62;
+}
+
+.task-kpi-lang {
+  background: #ecf4ff;
+  border-color: #cfe0ff;
 }
 
 .payment-logo {
@@ -914,6 +970,31 @@ h1 {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
+}
+
+.task-language-constraint {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid #cce8e3;
+  border-radius: 12px;
+  background: #f3fcfa;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.task-language-constraint p {
+  margin: 0;
+  color: #1d4f6a;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.constraint-icon {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  opacity: 0.9;
 }
 
 .summary-box small {
@@ -1142,6 +1223,30 @@ textarea {
   margin-top: 6px;
   color: var(--muted);
   font-size: 12px;
+}
+
+.language-confirm {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #2f4f67;
+}
+
+.language-confirm input[type="checkbox"] {
+  width: 16px;
+  min-width: 16px;
+  max-width: 16px;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+  border-radius: 4px;
+  accent-color: var(--primary);
+  flex: 0 0 auto;
+}
+
+.language-confirm strong {
+  color: #163b5f;
 }
 
 .card {

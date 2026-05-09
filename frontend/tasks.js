@@ -19,11 +19,15 @@ const taskModalDescription = document.getElementById("task-modal-description");
 const taskModalEndpoints = document.getElementById("task-modal-endpoints");
 const taskModalLayout = document.getElementById("task-modal-layout");
 const taskModalRun = document.getElementById("task-modal-run");
+const taskModalLanguage = document.getElementById("task-modal-language");
 const thinkingInput = document.getElementById("submission-thinking");
 const codeInput = document.getElementById("submission-code");
 const codeLineNumbers = document.getElementById("code-line-numbers");
 const submissionFilesInput = document.getElementById("submission-files");
 const submissionFilesList = document.getElementById("submission-files-list");
+const confirmLanguageFit = document.getElementById("confirm-language-fit");
+const confirmLanguageFitLabel = document.getElementById("confirm-language-fit-label");
+const submissionLanguageUsed = document.getElementById("submission-language-used");
 const brandLink = document.getElementById("brand-link");
 
 let selectedLanguage = "all";
@@ -85,6 +89,26 @@ function formatTaskId(taskId) {
   if (raw.startsWith("PB-")) return `TASK-${raw.slice(3)}`;
   if (raw.startsWith("SR-")) return `TASK-${raw.slice(3)}`;
   return raw;
+}
+
+function languageConstraintEnabled(taskLanguage) {
+  const normalized = String(taskLanguage || "").trim().toLowerCase();
+  return normalized !== "" && normalized !== "all" && normalized !== "general";
+}
+
+function deriveTaskLanguage(task) {
+  const primary = String(task?.language || "").trim();
+  if (languageConstraintEnabled(primary)) return primary;
+  const fallback = String(task?.type || "").trim();
+  if (languageConstraintEnabled(fallback)) return fallback;
+  return "";
+}
+
+function displayTaskType(task, derivedLanguage) {
+  const typeText = String(task?.type || "").trim();
+  if (!typeText) return "";
+  if (derivedLanguage && typeText.toLowerCase() === derivedLanguage.toLowerCase()) return "";
+  return typeText;
 }
 
 async function fetchTasks(language = "all") {
@@ -201,8 +225,11 @@ function renderTaskCards(tasks) {
   }
 
   taskList.innerHTML = tasks
-    .map(
-      (task) => `
+    .map((task) => {
+      const derivedLanguage = deriveTaskLanguage(task);
+      const typeText = displayTaskType(task, derivedLanguage);
+      const sublineLeft = [task.startup_name || "Startup App", typeText].filter(Boolean).join(" • ");
+      return `
       <article class="task-card" data-task-id="${task.id}" role="button" tabindex="0" aria-label="Open ${task.title}">
         <div class="task-signal"></div>
         <div class="task-top">
@@ -210,13 +237,19 @@ function renderTaskCards(tasks) {
           <strong class="task-reward">$${Number(task.reward).toFixed(2)}</strong>
         </div>
         <div class="task-subline">
-          <span>${task.startup_name || "Startup App"} • ${task.type}</span>
+          <span><img class="task-inline-icon" src="./icon-review.svg" alt="" />${sublineLeft}</span>
           <span>${formatTaskId(task.id)}</span>
         </div>
         <p class="task-summary">${task.summary}</p>
         <div class="task-meta">
-          <span class="task-kpi">Slots: <strong>${task.slots}</strong></span>
-          <span class="task-kpi">Level: <strong>${fitScore(task)}</strong></span>
+          <span class="task-kpi task-kpi-highlight"><img class="task-inline-icon" src="./icon-wallet.svg" alt="" /><strong>$${Number(task.reward).toFixed(2)}</strong></span>
+          <span class="task-kpi"><img class="task-inline-icon" src="./icon-user.svg" alt="" />Slots: <strong>${task.slots}</strong></span>
+          ${
+            derivedLanguage
+              ? `<span class="task-kpi task-kpi-lang"><img class="task-inline-icon" src="./icon-payout.svg" alt="" />Language: <strong>${derivedLanguage}</strong></span>`
+              : ""
+          }
+          <span class="task-kpi"><img class="task-inline-icon" src="./icon-review.svg" alt="" />Level: <strong>${fitScore(task)}</strong></span>
           <span class="status-pill ${statusClass(task.status)}">${statusLabel(task.status)}</span>
         </div>
         <div class="task-card-actions">
@@ -225,8 +258,8 @@ function renderTaskCards(tasks) {
           }</button>
           <button class="btn btn-primary open-task-btn" data-task-id="${task.id}">Open task</button>
         </div>
-      </article>`
-    )
+      </article>`;
+    })
     .join("");
 
   document.querySelectorAll(".task-card").forEach((card) => {
@@ -339,10 +372,25 @@ async function openTaskModal(taskId) {
     taskModalEndpoints.textContent = task.context.endpoints;
     taskModalLayout.textContent = task.context.layout;
     taskModalRun.textContent = task.context.run;
+    const requiredLanguage = deriveTaskLanguage(task);
+    taskModalLanguage.textContent = requiredLanguage || "Set by startup";
+    if (confirmLanguageFitLabel) confirmLanguageFitLabel.textContent = (requiredLanguage || "this task language").toLowerCase();
     taskModalStatus.className = `status-pill ${statusClass(task.status)}`;
     taskModalStatus.textContent = statusLabel(task.status);
     thinkingInput.value = "";
     codeInput.value = "";
+    if (confirmLanguageFit) {
+      confirmLanguageFit.checked = false;
+      const confirmWrap = confirmLanguageFit.closest(".language-confirm");
+      const mustMatchLanguage = !!requiredLanguage;
+      confirmLanguageFit.required = mustMatchLanguage;
+      if (confirmWrap) confirmWrap.classList.toggle("hidden", !mustMatchLanguage);
+    }
+    if (submissionLanguageUsed) {
+      const options = Array.from(submissionLanguageUsed.options).map((option) => option.value);
+      const target = task.language && options.includes(task.language) ? task.language : "";
+      submissionLanguageUsed.value = target;
+    }
     pendingAttachments = [];
     if (submissionFilesInput) submissionFilesInput.value = "";
     renderAttachmentSelection();
@@ -365,8 +413,22 @@ taskSubmitForm.addEventListener("submit", async (event) => {
 
   const thinking = thinkingInput.value.trim();
   const code = codeInput.value.trim();
+  const selectedLanguage = submissionLanguageUsed?.value?.trim() || "";
+  const requiredLanguage = deriveTaskLanguage(activeTask);
   if (thinking.length < 20 || code.length < 12) {
     alert("Please provide both your thinking process and code.");
+    return;
+  }
+  if (!selectedLanguage) {
+    alert("Please select the programming language used in your code.");
+    return;
+  }
+  if (requiredLanguage && selectedLanguage.toLowerCase() !== requiredLanguage.toLowerCase()) {
+    alert(`This task requires ${requiredLanguage}. Please submit code in ${requiredLanguage}.`);
+    return;
+  }
+  if (confirmLanguageFit && confirmLanguageFit.required && !confirmLanguageFit.checked) {
+    alert(`Please confirm your submission matches the required programming language (${activeTask.language || "required language"}).`);
     return;
   }
 
@@ -393,6 +455,7 @@ taskSubmitForm.addEventListener("submit", async (event) => {
       reviewNote: "",
       rejectionReason: "",
       payoutRate: 0,
+      submittedLanguage: selectedLanguage,
       attachments: pendingAttachments.map((file) => ({ fileName: file.name, sizeBytes: file.size })),
       submittedAt: new Date().toISOString(),
     });
