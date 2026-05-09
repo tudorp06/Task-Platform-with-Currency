@@ -2,7 +2,7 @@ const SESSION_KEY = "app_contributor_session";
 const USERS_DB_KEY = "app_contributor_users_db";
 const LAST_PAGE_KEY = "app_contributor_last_page";
 const AUTH_TOKEN_KEY = "app_contributor_auth_token";
-const API_BASE_URL = "http://127.0.0.1:8000/api";
+const API_BASE_URL = "https://your-render-service.onrender.com/api";
 
 const navbarRight = document.getElementById("navbar-right");
 const authModal = document.getElementById("auth-modal");

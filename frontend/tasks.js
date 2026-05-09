@@ -1,6 +1,6 @@
 const SESSION_KEY = "app_contributor_session";
 const AUTH_TOKEN_KEY = "app_contributor_auth_token";
-const API_BASE_URL = "http://127.0.0.1:8000/api";
+const API_BASE_URL = "https://your-render-service.onrender.com/api";
 const LAST_PAGE_KEY = "app_contributor_last_page";
 const SUBMISSIONS_DB_KEY = "app_contributor_submissions_db";
 const TASK_SHORTLIST_KEY = "app_contributor_task_shortlist";

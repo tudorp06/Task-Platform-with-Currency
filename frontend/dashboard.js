@@ -9,6 +9,7 @@ const PAYOUT_METHODS_DB_KEY = "app_contributor_payout_methods_db";
 const PAYOUT_REQUESTS_DB_KEY = "app_contributor_payout_requests_db";
 const BALANCES_DB_KEY = "app_contributor_balances_db";
 const RECEIPTS_DB_KEY = "app_contributor_receipts_db";
+const API_BASE_URL = "https://your-render-service.onrender.com/api";
 
 const navbarRight = document.getElementById("navbar-right");
 const dashboardList = document.getElementById("dashboard-list");
@@ -132,7 +133,7 @@ function renderSubmissionAttachments(attachments = [], submissionId = null) {
 
 async function downloadSubmissionAttachment(session, attachmentId, fallbackName = "attachment.bin") {
   const token = sessionStorage.getItem(AUTH_TOKEN_KEY) || "";
-  const response = await fetch(`http://127.0.0.1:8000/api/submissions/attachments/${attachmentId}/download`, {
+  const response = await fetch(`${API_BASE_URL}/submissions/attachments/${attachmentId}/download`, {
     method: "GET",
     credentials: "include",
     headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -222,7 +223,7 @@ function renderNavbar(session) {
   document.getElementById("logout-btn").addEventListener("click", async () => {
     try {
       const csrfToken = readCookie("appcontributor_csrf");
-      await fetch("http://127.0.0.1:8000/api/auth/logout", {
+      await fetch(`${API_BASE_URL}/auth/logout`, {
         method: "POST",
         credentials: "include",
         headers: csrfToken ? { "X-CSRF-Token": csrfToken } : {},
@@ -293,7 +294,7 @@ function readCookie(name) {
 async function authedJson(path, session, method = "GET", payload = null) {
   const token = sessionStorage.getItem(AUTH_TOKEN_KEY) || "";
   const csrfToken = readCookie("appcontributor_csrf");
-  const response = await fetch(`http://127.0.0.1:8000/api${path}`, {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
     method,
     credentials: "include",
     headers: {
@@ -313,7 +314,7 @@ async function authedJson(path, session, method = "GET", payload = null) {
 async function trackEvent(session, event, metadata = {}) {
   const csrfToken = readCookie("appcontributor_csrf");
   try {
-    await fetch("http://127.0.0.1:8000/api/analytics/event", {
+    await fetch(`${API_BASE_URL}/analytics/event`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json", ...(csrfToken ? { "X-CSRF-Token": csrfToken } : {}) },

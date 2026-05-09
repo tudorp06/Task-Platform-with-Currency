@@ -1587,90 +1587,92 @@ def on_startup() -> None:
     validate_runtime_config()
     UPLOADS_BASE_DIR.mkdir(parents=True, exist_ok=True)
     Base.metadata.create_all(engine)
-    with engine.connect() as conn:
-        task_cols = {
-            row[1] for row in conn.exec_driver_sql("PRAGMA table_info(tasks)").fetchall()
-        }
-        if "startup_name" not in task_cols:
-            conn.exec_driver_sql("ALTER TABLE tasks ADD COLUMN startup_name VARCHAR(255)")
+    # Legacy SQLite patch-up logic. Postgres/other DBs should rely on SQLAlchemy models + Alembic migrations.
+    if engine.dialect.name == "sqlite":
+        with engine.connect() as conn:
+            task_cols = {
+                row[1] for row in conn.exec_driver_sql("PRAGMA table_info(tasks)").fetchall()
+            }
+            if "startup_name" not in task_cols:
+                conn.exec_driver_sql("ALTER TABLE tasks ADD COLUMN startup_name VARCHAR(255)")
+                conn.commit()
+
+        with engine.connect() as conn:
+            auth_cols = {
+                row[1] for row in conn.exec_driver_sql("PRAGMA table_info(auth_users)").fetchall()
+            }
+            if "profile_completed" not in auth_cols:
+                conn.exec_driver_sql("ALTER TABLE auth_users ADD COLUMN profile_completed BOOLEAN DEFAULT 0")
+            if "is_active" not in auth_cols:
+                conn.exec_driver_sql("ALTER TABLE auth_users ADD COLUMN is_active BOOLEAN DEFAULT 1")
+            if "stripe_customer_id" not in auth_cols:
+                conn.exec_driver_sql("ALTER TABLE auth_users ADD COLUMN stripe_customer_id VARCHAR(80)")
+                conn.commit()
+
+        with engine.connect() as conn:
+            session_cols = {
+                row[1] for row in conn.exec_driver_sql("PRAGMA table_info(auth_sessions)").fetchall()
+            }
+            if "expires_at" not in session_cols:
+                conn.exec_driver_sql("ALTER TABLE auth_sessions ADD COLUMN expires_at DATETIME")
+                conn.exec_driver_sql(
+                    f"UPDATE auth_sessions SET expires_at = datetime(created_at, '+{SESSION_TTL_HOURS} hours') WHERE expires_at IS NULL"
+                )
+                conn.commit()
+
+        with engine.connect() as conn:
+            submission_cols = {
+                row[1] for row in conn.exec_driver_sql("PRAGMA table_info(submissions)").fetchall()
+            }
+            if "review_note" not in submission_cols:
+                conn.exec_driver_sql("ALTER TABLE submissions ADD COLUMN review_note TEXT")
+            if "rejection_reason" not in submission_cols:
+                conn.exec_driver_sql("ALTER TABLE submissions ADD COLUMN rejection_reason TEXT")
+            if "ai_detection_confidence" not in submission_cols:
+                conn.exec_driver_sql("ALTER TABLE submissions ADD COLUMN ai_detection_confidence INTEGER")
+            if "payout_rate" not in submission_cols:
+                conn.exec_driver_sql("ALTER TABLE submissions ADD COLUMN payout_rate FLOAT")
+            if "reviewed_at" not in submission_cols:
+                conn.exec_driver_sql("ALTER TABLE submissions ADD COLUMN reviewed_at DATETIME")
+            if "startup_feedback_rating" not in submission_cols:
+                conn.exec_driver_sql("ALTER TABLE submissions ADD COLUMN startup_feedback_rating INTEGER")
+            if "startup_feedback_note" not in submission_cols:
+                conn.exec_driver_sql("ALTER TABLE submissions ADD COLUMN startup_feedback_note TEXT")
+            if "startup_feedback_at" not in submission_cols:
+                conn.exec_driver_sql("ALTER TABLE submissions ADD COLUMN startup_feedback_at DATETIME")
+            if "startup_feedback_user_id" not in submission_cols:
+                conn.exec_driver_sql("ALTER TABLE submissions ADD COLUMN startup_feedback_user_id INTEGER")
             conn.commit()
 
-    with engine.connect() as conn:
-        auth_cols = {
-            row[1] for row in conn.exec_driver_sql("PRAGMA table_info(auth_users)").fetchall()
-        }
-        if "profile_completed" not in auth_cols:
-            conn.exec_driver_sql("ALTER TABLE auth_users ADD COLUMN profile_completed BOOLEAN DEFAULT 0")
-        if "is_active" not in auth_cols:
-            conn.exec_driver_sql("ALTER TABLE auth_users ADD COLUMN is_active BOOLEAN DEFAULT 1")
-        if "stripe_customer_id" not in auth_cols:
-            conn.exec_driver_sql("ALTER TABLE auth_users ADD COLUMN stripe_customer_id VARCHAR(80)")
-            conn.commit()
-
-    with engine.connect() as conn:
-        session_cols = {
-            row[1] for row in conn.exec_driver_sql("PRAGMA table_info(auth_sessions)").fetchall()
-        }
-        if "expires_at" not in session_cols:
-            conn.exec_driver_sql("ALTER TABLE auth_sessions ADD COLUMN expires_at DATETIME")
+        with engine.connect() as conn:
             conn.exec_driver_sql(
-                f"UPDATE auth_sessions SET expires_at = datetime(created_at, '+{SESSION_TTL_HOURS} hours') WHERE expires_at IS NULL"
+                """
+                CREATE TABLE IF NOT EXISTS submission_attachments (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    submission_id INTEGER NOT NULL,
+                    file_name VARCHAR(255) NOT NULL,
+                    storage_name VARCHAR(255) NOT NULL UNIQUE,
+                    content_type VARCHAR(120) NOT NULL,
+                    size_bytes INTEGER NOT NULL,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )
+                """
             )
             conn.commit()
 
-    with engine.connect() as conn:
-        submission_cols = {
-            row[1] for row in conn.exec_driver_sql("PRAGMA table_info(submissions)").fetchall()
-        }
-        if "review_note" not in submission_cols:
-            conn.exec_driver_sql("ALTER TABLE submissions ADD COLUMN review_note TEXT")
-        if "rejection_reason" not in submission_cols:
-            conn.exec_driver_sql("ALTER TABLE submissions ADD COLUMN rejection_reason TEXT")
-        if "ai_detection_confidence" not in submission_cols:
-            conn.exec_driver_sql("ALTER TABLE submissions ADD COLUMN ai_detection_confidence INTEGER")
-        if "payout_rate" not in submission_cols:
-            conn.exec_driver_sql("ALTER TABLE submissions ADD COLUMN payout_rate FLOAT")
-        if "reviewed_at" not in submission_cols:
-            conn.exec_driver_sql("ALTER TABLE submissions ADD COLUMN reviewed_at DATETIME")
-        if "startup_feedback_rating" not in submission_cols:
-            conn.exec_driver_sql("ALTER TABLE submissions ADD COLUMN startup_feedback_rating INTEGER")
-        if "startup_feedback_note" not in submission_cols:
-            conn.exec_driver_sql("ALTER TABLE submissions ADD COLUMN startup_feedback_note TEXT")
-        if "startup_feedback_at" not in submission_cols:
-            conn.exec_driver_sql("ALTER TABLE submissions ADD COLUMN startup_feedback_at DATETIME")
-        if "startup_feedback_user_id" not in submission_cols:
-            conn.exec_driver_sql("ALTER TABLE submissions ADD COLUMN startup_feedback_user_id INTEGER")
-        conn.commit()
-
-    with engine.connect() as conn:
-        conn.exec_driver_sql(
-            """
-            CREATE TABLE IF NOT EXISTS submission_attachments (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                submission_id INTEGER NOT NULL,
-                file_name VARCHAR(255) NOT NULL,
-                storage_name VARCHAR(255) NOT NULL UNIQUE,
-                content_type VARCHAR(120) NOT NULL,
-                size_bytes INTEGER NOT NULL,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-            )
-            """
-        )
-        conn.commit()
-
-    with engine.connect() as conn:
-        startup_cols = {
-            row[1] for row in conn.exec_driver_sql("PRAGMA table_info(startups)").fetchall()
-        }
-        if "product_stage" not in startup_cols:
-            conn.exec_driver_sql("ALTER TABLE startups ADD COLUMN product_stage VARCHAR(80) DEFAULT 'idea'")
-        if "tech_stack" not in startup_cols:
-            conn.exec_driver_sql("ALTER TABLE startups ADD COLUMN tech_stack TEXT DEFAULT ''")
-        if "tasks_posted" not in startup_cols:
-            conn.exec_driver_sql("ALTER TABLE startups ADD COLUMN tasks_posted INTEGER DEFAULT 0")
-        if "number_of_tasks" not in startup_cols:
-            conn.exec_driver_sql("ALTER TABLE startups ADD COLUMN number_of_tasks INTEGER DEFAULT 0")
-        conn.commit()
+        with engine.connect() as conn:
+            startup_cols = {
+                row[1] for row in conn.exec_driver_sql("PRAGMA table_info(startups)").fetchall()
+            }
+            if "product_stage" not in startup_cols:
+                conn.exec_driver_sql("ALTER TABLE startups ADD COLUMN product_stage VARCHAR(80) DEFAULT 'idea'")
+            if "tech_stack" not in startup_cols:
+                conn.exec_driver_sql("ALTER TABLE startups ADD COLUMN tech_stack TEXT DEFAULT ''")
+            if "tasks_posted" not in startup_cols:
+                conn.exec_driver_sql("ALTER TABLE startups ADD COLUMN tasks_posted INTEGER DEFAULT 0")
+            if "number_of_tasks" not in startup_cols:
+                conn.exec_driver_sql("ALTER TABLE startups ADD COLUMN number_of_tasks INTEGER DEFAULT 0")
+            conn.commit()
 
     with Session(engine) as session:
         existing_rows = {row.id: row for row in session.execute(select(TaskRecord)).scalars().all()}
