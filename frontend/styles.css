@@ -48,11 +48,11 @@ body {
 .brand-box {
   display: inline-flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   padding: 0;
   margin: 0;
   min-width: 0;
-  max-width: min(100%, 520px);
+  max-width: min(100%, 640px);
   border: none;
   background: none;
   border-radius: 0;
@@ -80,16 +80,18 @@ body {
   flex-direction: row;
   align-items: center;
   flex-wrap: wrap;
-  gap: 10px 12px;
+  gap: 12px 14px;
   padding: 0;
   min-width: 0;
 }
 
+/* Sized to sit next to the 80px mark: similar visual height, one line */
 .brand-text strong {
   font-family: "Plus Jakarta Sans", Inter, "Segoe UI", sans-serif;
-  font-size: 26px;
-  line-height: 1.1;
-  letter-spacing: -0.025em;
+  font-size: clamp(28px, 2.65vw, 42px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
   margin: 0;
   padding: 0;
   display: inline-block;
@@ -101,21 +103,20 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 3px 9px;
+  padding: 4px 11px;
   border-radius: 6px;
   font-family: Inter, system-ui, sans-serif;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #3d6b73;
   background: rgba(14, 165, 164, 0.12);
   border: 1px solid rgba(14, 165, 164, 0.35);
   white-space: nowrap;
   margin: 0;
-  line-height: 1.25;
+  line-height: 1.2;
   flex-shrink: 0;
-  transform: translateY(0.5px);
 }
 
 .nav-actions {
@@ -1622,14 +1623,14 @@ textarea:focus {
   }
 
   .brand-text strong {
-    font-size: 20px;
-    line-height: 1.12;
+    font-size: clamp(22px, 5.6vw, 32px);
+    line-height: 1;
   }
 
   .brand-version-chip {
-    font-size: 8px;
-    padding: 3px 8px;
-    letter-spacing: 0.12em;
+    font-size: 9px;
+    padding: 3px 9px;
+    letter-spacing: 0.1em;
   }
 
   h1 {
