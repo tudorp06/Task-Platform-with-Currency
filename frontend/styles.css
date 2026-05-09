@@ -47,11 +47,11 @@ body {
 .brand-box {
   display: inline-flex;
   align-items: center;
-  gap: 16px;
-  padding: 4px 0;
+  gap: 14px;
+  padding: 0;
   margin: 0;
   min-width: 0;
-  max-width: min(100%, 420px);
+  max-width: min(100%, 520px);
   border: none;
   background: none;
   border-radius: 0;
@@ -62,9 +62,9 @@ body {
 }
 
 .brand-logo-image {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
   object-fit: contain;
   border: none;
   background: transparent;
@@ -73,42 +73,48 @@ body {
   display: block;
 }
 
+/* One horizontal line: wordmark + compact BETA, vertically aligned with logo */
 .brand-text {
-  display: flex;
-  align-items: flex-start;
-  flex-direction: column;
-  justify-content: center;
-  gap: 10px;
-  padding: 2px 0 0;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  padding: 0;
   min-width: 0;
 }
 
 .brand-text strong {
   font-family: "Plus Jakarta Sans", Inter, "Segoe UI", sans-serif;
   font-size: 26px;
-  line-height: 1.2;
+  line-height: 1.1;
   letter-spacing: -0.025em;
   margin: 0;
   padding: 0;
-  display: block;
+  display: inline-block;
+  flex-shrink: 0;
 }
 
+/* Small tag after the name — not a second row */
 .brand-version-chip {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 6px 14px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #ffffff;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-  border: 1px solid rgba(124, 58, 237, 0.28);
+  color: #3d6b73;
+  background: rgba(14, 165, 164, 0.12);
+  border: 1px solid rgba(14, 165, 164, 0.35);
   white-space: nowrap;
   margin: 0;
-  line-height: 1.2;
+  line-height: 1.25;
+  flex-shrink: 0;
+  transform: translateY(0.5px);
 }
 
 .nav-actions {
@@ -1602,28 +1608,27 @@ textarea:focus {
 
   .brand-box {
     max-width: 100%;
-    gap: 12px;
-    padding: 2px 0;
+    gap: 10px;
   }
 
   .brand-logo-image {
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
   }
 
   .brand-text {
-    gap: 8px;
-    padding: 1px 0 0;
+    gap: 8px 10px;
   }
 
   .brand-text strong {
-    font-size: 22px;
-    line-height: 1.22;
+    font-size: 20px;
+    line-height: 1.12;
   }
 
   .brand-version-chip {
-    padding: 5px 12px;
-    letter-spacing: 0.05em;
+    font-size: 8px;
+    padding: 3px 8px;
+    letter-spacing: 0.12em;
   }
 
   h1 {
