@@ -1,7 +1,12 @@
 const SESSION_KEY = "app_contributor_session";
 const USERS_DB_KEY = "app_contributor_users_db";
 const AUTH_TOKEN_KEY = "app_contributor_auth_token";
-const API_BASE_URL = "https://appcontributor-backend.onrender.com/api";
+const API_BASE_URL = (() => {
+  const configured = String(window.__APP_API_BASE_URL__ || "").trim();
+  const base = configured || "https://appcontributor-backend.onrender.com/api";
+  const normalized = base.replace(/\/+$/, "");
+  return normalized.endsWith("/api") ? normalized : `${normalized}/api`;
+})();
 
 const navbarRight = document.getElementById("navbar-right");
 const onboardingForm = document.getElementById("onboarding-form");
@@ -12,7 +17,6 @@ const skillsInput = document.getElementById("skills-input");
 const githubInput = document.getElementById("github-input");
 const bioInput = document.getElementById("bio-input");
 const sortingAnswerInput = document.getElementById("sorting-answer-input");
-const brandLink = document.getElementById("brand-link");
 
 function loadJson(key, fallback) {
   try {
@@ -53,16 +57,23 @@ function readCookie(name) {
 async function markProfileCompleted() {
   const token = sessionStorage.getItem(AUTH_TOKEN_KEY) || "";
   const csrfToken = readCookie("appcontributor_csrf");
-  const response = await fetch(`${API_BASE_URL}/auth/profile-complete`, {
-    method: "PATCH",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(csrfToken ? { "X-CSRF-Token": csrfToken } : {}),
-    },
-    body: JSON.stringify({ profileCompleted: true }),
-  });
+  let response;
+  try {
+    response = await fetch(`${API_BASE_URL}/auth/profile-complete`, {
+      method: "PATCH",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(csrfToken ? { "X-CSRF-Token": csrfToken } : {}),
+      },
+      body: JSON.stringify({ profileCompleted: true }),
+    });
+  } catch (error) {
+    throw new Error(
+      "Could not reach backend API. Check Netlify APP_API_BASE_URL and backend CORS/cookie settings."
+    );
+  }
   const body = await response.json().catch(() => ({}));
   if (!response.ok) {
     throw new Error(body?.detail || "Could not save profile completion state.");
@@ -93,7 +104,6 @@ if (!session) {
   window.location.href = "./startup-onboarding.html";
 } else {
   renderNavbar(session);
-  if (brandLink) brandLink.href = "./onboarding.html";
 }
 
 onboardingForm?.addEventListener("submit", async (event) => {

@@ -1,11 +1,15 @@
 const SESSION_KEY = "app_contributor_session";
 const AUTH_TOKEN_KEY = "app_contributor_auth_token";
-const API_BASE_URL = "https://appcontributor-backend.onrender.com/api";
+const API_BASE_URL = (() => {
+  const configured = String(window.__APP_API_BASE_URL__ || "").trim();
+  const base = configured || "https://appcontributor-backend.onrender.com/api";
+  const normalized = base.replace(/\/+$/, "");
+  return normalized.endsWith("/api") ? normalized : `${normalized}/api`;
+})();
 
 const navbarRight = document.getElementById("navbar-right");
 const form = document.getElementById("startup-onboarding-form");
 const feedback = document.getElementById("startup-onboarding-feedback");
-const brandLink = document.getElementById("brand-link");
 const companyNameInput = document.getElementById("startup-company-name");
 const websiteInput = document.getElementById("startup-website-url");
 const industryInput = document.getElementById("startup-industry");
@@ -52,16 +56,23 @@ function readCookie(name) {
 async function registerStartup(payload) {
   const token = sessionStorage.getItem(AUTH_TOKEN_KEY) || "";
   const csrfToken = readCookie("appcontributor_csrf");
-  const response = await fetch(`${API_BASE_URL}/startups/register`, {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(csrfToken ? { "X-CSRF-Token": csrfToken } : {}),
-    },
-    body: JSON.stringify(payload),
-  });
+  let response;
+  try {
+    response = await fetch(`${API_BASE_URL}/startups/register`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(csrfToken ? { "X-CSRF-Token": csrfToken } : {}),
+      },
+      body: JSON.stringify(payload),
+    });
+  } catch {
+    throw new Error(
+      "Could not reach backend API. Check Netlify APP_API_BASE_URL and backend CORS/cookie settings."
+    );
+  }
   const body = await response.json().catch(() => ({}));
   if (!response.ok) {
     throw new Error(body?.detail || "Startup registration failed");
@@ -78,7 +89,6 @@ if (!session) {
   window.location.href = "./dashboard.html";
 } else {
   renderNavbar(session);
-  if (brandLink) brandLink.href = "./startup-onboarding.html";
 }
 
 form?.addEventListener("submit", async (event) => {

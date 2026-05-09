@@ -2,7 +2,12 @@ const SESSION_KEY = "app_contributor_session";
 const USERS_DB_KEY = "app_contributor_users_db";
 const LAST_PAGE_KEY = "app_contributor_last_page";
 const AUTH_TOKEN_KEY = "app_contributor_auth_token";
-const API_BASE_URL = "https://appcontributor-backend.onrender.com/api";
+const API_BASE_URL = (() => {
+  const configured = String(window.__APP_API_BASE_URL__ || "").trim();
+  const base = configured || "https://appcontributor-backend.onrender.com/api";
+  const normalized = base.replace(/\/+$/, "");
+  return normalized.endsWith("/api") ? normalized : `${normalized}/api`;
+})();
 
 const navbarRight = document.getElementById("navbar-right");
 const authModal = document.getElementById("auth-modal");
@@ -11,7 +16,6 @@ const closeModalBtn = document.getElementById("close-modal");
 const contributorBtn = document.getElementById("join-contributor");
 const startupBtn = document.getElementById("join-startup");
 const authRoleLabel = document.getElementById("auth-role-label");
-const brandLink = document.getElementById("brand-link");
 const authModeLoginBtn = document.getElementById("auth-mode-login");
 const authModeSignupBtn = document.getElementById("auth-mode-signup");
 const authFeedback = document.getElementById("auth-feedback");
@@ -152,12 +156,17 @@ async function logoutRequest() {
 
 async function postJson(path, payload) {
   const csrfToken = readCookie("appcontributor_csrf");
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json", ...(csrfToken ? { "X-CSRF-Token": csrfToken } : {}) },
-    body: JSON.stringify(payload),
-  });
+  let response;
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json", ...(csrfToken ? { "X-CSRF-Token": csrfToken } : {}) },
+      body: JSON.stringify(payload),
+    });
+  } catch {
+    throw new Error("Could not reach backend API. Check API base URL and CORS settings.");
+  }
   const body = await response.json().catch(() => ({}));
   if (!response.ok) {
     throw new Error(body?.detail || "Request failed");
@@ -295,17 +304,7 @@ function renderNavbar() {
 }
 
 function setBrandLinkTarget() {
-  const session = loadSession();
-  if (!session) {
-    brandLink.href = "./index.html";
-    return;
-  }
-  if (!session.profileCompleted) {
-    brandLink.href = setupRouteForRole(session.role);
-    return;
-  }
-  const lastPage = sessionStorage.getItem(LAST_PAGE_KEY);
-  brandLink.href = lastPage || (session.role === "contributor" ? "./tasks.html" : "./dashboard.html");
+  // Navbar brand is display-only (logo + title), not a link.
 }
 
 function updateAuthFormMode() {

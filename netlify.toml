@@ -1,0 +1,4 @@
+# Static site lives in /frontend. Build injects PostHog browser token from Netlify env (optional).
+[build]
+  publish = "frontend"
+  command = "node scripts/inject-posthog-browser-token.mjs"

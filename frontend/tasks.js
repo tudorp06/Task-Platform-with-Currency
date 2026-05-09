@@ -1,6 +1,11 @@
 const SESSION_KEY = "app_contributor_session";
 const AUTH_TOKEN_KEY = "app_contributor_auth_token";
-const API_BASE_URL = "https://appcontributor-backend.onrender.com/api";
+const API_BASE_URL = (() => {
+  const configured = String(window.__APP_API_BASE_URL__ || "").trim();
+  const base = configured || "https://appcontributor-backend.onrender.com/api";
+  const normalized = base.replace(/\/+$/, "");
+  return normalized.endsWith("/api") ? normalized : `${normalized}/api`;
+})();
 const LAST_PAGE_KEY = "app_contributor_last_page";
 const SUBMISSIONS_DB_KEY = "app_contributor_submissions_db";
 const TASK_SHORTLIST_KEY = "app_contributor_task_shortlist";
@@ -28,7 +33,6 @@ const submissionFilesList = document.getElementById("submission-files-list");
 const confirmLanguageFit = document.getElementById("confirm-language-fit");
 const confirmLanguageFitLabel = document.getElementById("confirm-language-fit-label");
 const submissionLanguageUsed = document.getElementById("submission-language-used");
-const brandLink = document.getElementById("brand-link");
 
 let selectedLanguage = "all";
 let activeTask = null;
@@ -211,13 +215,7 @@ function renderNavbar() {
 }
 
 function setBrandLinkTarget() {
-  const session = loadSession();
-  if (!session) {
-    brandLink.href = "./index.html";
-    return;
-  }
-  const lastPage = sessionStorage.getItem(LAST_PAGE_KEY);
-  brandLink.href = lastPage || (session.role === "contributor" ? "./tasks.html" : "./dashboard.html");
+  // Navbar brand is display-only (logo + title), not a link.
 }
 
 function renderTaskCards(tasks) {

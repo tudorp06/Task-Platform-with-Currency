@@ -45,33 +45,32 @@ body {
 }
 
 .brand-box {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 12px;
-  border: 1px solid #d4e2f7;
-  background: #ffffff;
-  padding: 10px 14px;
-  border-radius: 14px;
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.1);
-  min-width: 280px;
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  max-width: min(100%, 420px);
+  border: none;
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
   text-decoration: none;
   color: inherit;
-  transition: transform 120ms ease, box-shadow 120ms ease;
-}
-
-.brand-box:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.14);
+  cursor: default;
 }
 
 .brand-logo-image {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border-radius: 10px;
-  object-fit: cover;
-  border: 1px solid #c7daf7;
-  background: #fff;
-  padding: 3px;
+  object-fit: contain;
+  border: none;
+  background: transparent;
+  padding: 0;
+  flex-shrink: 0;
+  display: block;
 }
 
 .brand-text {
@@ -1592,8 +1591,13 @@ textarea:focus {
   }
 
   .brand-box {
-    min-width: auto;
-    padding: 10px 12px;
+    max-width: 100%;
+    gap: 8px;
+  }
+
+  .brand-logo-image {
+    width: 40px;
+    height: 40px;
   }
 
   .brand-text strong {

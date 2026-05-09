@@ -20,6 +20,7 @@ assets/
 !assets/screenshots/*.jpeg
 !assets/screenshots/*.webp
 frontend/posthog.config.js
+frontend/posthog.local.js
 
 # Sensitive/internal markdown docs
 MONETIZATION_PLAN.md

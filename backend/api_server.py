@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import contextvars
 import json
 import hashlib
 import hmac
 import mimetypes
 import os
+import re
 import secrets
 import time
 from contextlib import asynccontextmanager
@@ -605,19 +607,29 @@ ALLOWED_SUBMISSION_ATTACHMENT_EXTENSIONS = {
     ".jpg",
     ".jpeg",
 }
+def normalize_origin(origin: str) -> str:
+    return origin.strip().rstrip("/")
+
+
 CORS_ALLOW_ORIGINS = [
-    origin.strip()
+    normalize_origin(origin)
     for origin in os.getenv(
         "CORS_ALLOW_ORIGINS",
         "http://127.0.0.1:5500,http://localhost:5500,http://[::1]:5500",
     ).split(",")
-    if origin.strip()
+    if normalize_origin(origin)
 ]
+ALLOW_NETLIFY_PREVIEW_ORIGINS = os.getenv("ALLOW_NETLIFY_PREVIEW_ORIGINS", "1") == "1"
+NETLIFY_ORIGIN_REGEX = re.compile(r"^https://[a-z0-9-]+\.netlify\.app$")
 SESSION_TTL_HOURS = max(1, int(os.getenv("SESSION_TTL_HOURS", "168")))
 AUTH_COOKIE_NAME = os.getenv("AUTH_COOKIE_NAME", "appcontributor_session")
 AUTH_COOKIE_SECURE = os.getenv("AUTH_COOKIE_SECURE", "0") == "1"
 AUTH_COOKIE_SAMESITE = os.getenv("AUTH_COOKIE_SAMESITE", "lax")
 AUTH_CSRF_COOKIE_NAME = os.getenv("AUTH_CSRF_COOKIE_NAME", "appcontributor_csrf")
+# Per-request httponly session cookie value so auth can fall back when a stale Bearer is still in sessionStorage.
+_request_auth_cookie_token: contextvars.ContextVar[Optional[str]] = contextvars.ContextVar(
+    "request_auth_cookie_token", default=None
+)
 ADMIN_BOOTSTRAP_EMAIL = os.getenv("ADMIN_BOOTSTRAP_EMAIL", "admin@appcontributor.local").strip().lower()
 ADMIN_BOOTSTRAP_PASSWORD = os.getenv("ADMIN_BOOTSTRAP_PASSWORD", "").strip()
 ADMIN_BOOTSTRAP_NAME = os.getenv("ADMIN_BOOTSTRAP_NAME", "Platform Admin").strip()
@@ -653,10 +665,20 @@ app = FastAPI(title="AppContributor API", version="1.0.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ALLOW_ORIGINS,
+    allow_origin_regex=NETLIFY_ORIGIN_REGEX.pattern if ALLOW_NETLIFY_PREVIEW_ORIGINS else None,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "X-Auth-Token", "X-CSRF-Token"],
 )
+
+
+def is_allowed_origin(origin: str) -> bool:
+    normalized = normalize_origin(origin)
+    if not normalized:
+        return False
+    if normalized in CORS_ALLOW_ORIGINS:
+        return True
+    return bool(ALLOW_NETLIFY_PREVIEW_ORIGINS and NETLIFY_ORIGIN_REGEX.match(normalized))
 
 if sentry_sdk is not None and SENTRY_DSN:
     sentry_sdk.init(
@@ -669,13 +691,17 @@ if sentry_sdk is not None and SENTRY_DSN:
 
 @app.middleware("http")
 async def propagate_auth_cookie(request: Request, call_next):
-    if "authorization" not in request.headers and "x-auth-token" not in request.headers:
-        cookie_token = request.cookies.get(AUTH_COOKIE_NAME, "").strip()
-        if cookie_token:
-            request.scope["headers"] = list(request.scope.get("headers", [])) + [
-                (b"x-auth-token", cookie_token.encode("utf-8"))
-            ]
-    return await call_next(request)
+    cookie_token = request.cookies.get(AUTH_COOKIE_NAME, "").strip() or None
+    reset = _request_auth_cookie_token.set(cookie_token)
+    try:
+        if "authorization" not in request.headers and "x-auth-token" not in request.headers:
+            if cookie_token:
+                request.scope["headers"] = list(request.scope.get("headers", [])) + [
+                    (b"x-auth-token", cookie_token.encode("utf-8"))
+                ]
+        return await call_next(request)
+    finally:
+        _request_auth_cookie_token.reset(reset)
 
 
 @app.middleware("http")
@@ -690,7 +716,7 @@ async def csrf_protect_mutations(request: Request, call_next):
         }
         if request.url.path not in csrf_exempt:
             origin = request.headers.get("origin", "").strip()
-            if origin and origin not in CORS_ALLOW_ORIGINS:
+            if origin and not is_allowed_origin(origin):
                 return Response(status_code=403, content="Invalid origin")
             # If explicit auth header token is present, the request is not CSRF-able in the same way as cookie auth.
             auth_header = request.headers.get("authorization", "").strip()
@@ -1534,7 +1560,17 @@ def resolve_user_from_token(authorization: Optional[str], x_auth_token: Optional
         tokens.append(authorization[7:].strip())
     if x_auth_token:
         tokens.append(x_auth_token.strip())
-    tokens = [token for token in tokens if token]
+    cookie_token = _request_auth_cookie_token.get()
+    if cookie_token:
+        tokens.append(cookie_token.strip())
+    # De-dupe while preserving order (Bearer may match cookie; invalid Bearer should not block valid cookie).
+    seen: set[str] = set()
+    ordered: list[str] = []
+    for token in tokens:
+        if token and token not in seen:
+            ordered.append(token)
+            seen.add(token)
+    tokens = ordered
 
     if not tokens:
         raise HTTPException(status_code=401, detail="Missing authentication token")

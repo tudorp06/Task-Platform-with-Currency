@@ -7,11 +7,11 @@
     <link rel="icon" type="image/png" href="./logo.png?v=2" />
     <link rel="shortcut icon" href="./logo.png?v=2" />
     <link rel="apple-touch-icon" href="./logo.png?v=2" />
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles.css?v=6" />
   </head>
   <body>
     <header class="navbar">
-      <a id="brand-link" class="brand-box" href="./dashboard.html">
+      <div id="brand-link" class="brand-box">
         <img
           class="brand-logo-image"
           src="./logo.png?v=2"
@@ -21,7 +21,7 @@
           <strong>AppContributor</strong>
           <span class="brand-version-chip">BETA</span>
         </div>
-      </a>
+      </div>
       <div id="navbar-right" class="nav-actions"></div>
     </header>
 
@@ -328,7 +328,7 @@
     </footer>
 
     <script src="https://js.stripe.com/v3/"></script>
-    <script src="./posthog.config.js"></script>
+    <script src="./posthog.browser.js"></script>
     <script>
       window.__POSTHOG_PROJECT_TOKEN__ = window.__POSTHOG_PROJECT_TOKEN__ || "";
       (function (t, e) {
