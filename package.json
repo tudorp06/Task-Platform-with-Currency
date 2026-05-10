@@ -1,0 +1,8 @@
+{
+  "name": "appcontributor",
+  "private": true,
+  "description": "Vercel build: injects API URL and optional PostHog token into frontend/js before publish.",
+  "scripts": {
+    "build": "node scripts/inject-posthog-browser-token.mjs && node scripts/inject-api-base-url.mjs"
+  }
+}

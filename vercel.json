@@ -1,0 +1,29 @@
+﻿{
+    "$schema":  "https://openapi.vercel.sh/vercel.json",
+    "framework":  null,
+    "installCommand":  "npm install",
+    "buildCommand":  "npm run build",
+    "outputDirectory":  "frontend",
+    "rewrites":  [
+                     {
+                         "destination":  "/views/dashboard.html",
+                         "source":  "/dashboard.html"
+                     },
+                     {
+                         "destination":  "/views/tasks.html",
+                         "source":  "/tasks.html"
+                     },
+                     {
+                         "destination":  "/views/onboarding.html",
+                         "source":  "/onboarding.html"
+                     },
+                     {
+                         "destination":  "/views/startup-onboarding.html",
+                         "source":  "/startup-onboarding.html"
+                     },
+                     {
+                         "destination":  "/views/admin-signin.html",
+                         "source":  "/admin-signin.html"
+                     }
+                 ]
+}

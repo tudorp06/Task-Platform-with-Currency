@@ -1,0 +1,1 @@
+window.__POSTHOG_PROJECT_TOKEN__ = "phc_qVhQ22YYCaT4h9tDwEWYjEdEf49iJCTDVjkJHsayd8vy";

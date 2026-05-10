@@ -1,4 +1,4 @@
-const SESSION_KEY = "app_contributor_session";
+﻿const SESSION_KEY = "app_contributor_session";
 const AUTH_TOKEN_KEY = "app_contributor_auth_token";
 const USERS_DB_KEY = "app_contributor_users_db";
 const SUBMISSIONS_DB_KEY = "app_contributor_submissions_db";
@@ -124,7 +124,7 @@ function renderSubmissionAttachments(attachments = [], submissionId = null) {
       ${attachments
         .map(
           (file) => `<div class="submission-attachment-item">
-          <span>${escapeHtml(file.fileName || "Attachment")} • ${formatAttachmentSize(file.sizeBytes)}</span>
+          <span>${escapeHtml(file.fileName || "Attachment")} â€¢ ${formatAttachmentSize(file.sizeBytes)}</span>
           <button type="button" class="btn btn-ghost submission-download-btn" data-attachment-id="${Number(file.id || 0)}" ${
             submissionId ? `data-submission-id="${submissionId}"` : ""
           }>Download</button>
@@ -213,14 +213,14 @@ function getCurrentUserRecord(session) {
 }
 
 function renderNavbar(session) {
-  const tasksLink = session.role === "contributor" ? `<a class="btn btn-ghost" href="./tasks.html">Tasks</a>` : "";
+  const tasksLink = session.role === "contributor" ? `<a class="btn btn-ghost" href="/views/tasks.html">Tasks</a>` : "";
   navbarRight.innerHTML = `
     ${tasksLink}
-    <a class="btn btn-ghost" href="./dashboard.html">Dashboard</a>
+    <a class="btn btn-ghost" href="/views/dashboard.html">Dashboard</a>
     <button class="btn btn-ghost" id="logout-btn">Logout</button>
-    <span class="chip"><img class="money-icon-img" src="./icon-wallet.svg" alt="" /> Balance: $${Number(session.balance).toFixed(2)}</span>
-    <a class="btn btn-ghost user-profile-btn" href="./dashboard.html" title="Open your profile">
-      <img class="user-icon-img" src="./icon-user.svg" alt="" />
+    <span class="chip"><img class="money-icon-img" src="/assets/icons/icon-wallet.svg" alt="" /> Balance: $${Number(session.balance).toFixed(2)}</span>
+    <a class="btn btn-ghost user-profile-btn" href="/views/dashboard.html" title="Open your profile">
+      <img class="user-icon-img" src="/assets/icons/icon-user.svg" alt="" />
       Profile
     </a>
   `;
@@ -237,7 +237,7 @@ function renderNavbar(session) {
     }
     localStorage.removeItem(SESSION_KEY);
     sessionStorage.removeItem(AUTH_TOKEN_KEY);
-    window.location.href = "./index.html";
+    window.location.href = "/index.html";
   });
 }
 
@@ -373,7 +373,7 @@ function renderUserProfile(session) {
       <div class="profile-avatar">${avatarImage}</div>
       <div>
         <h3>${session.fullName}</h3>
-        <p>${session.email} • ${session.role}</p>
+        <p>${session.email} â€¢ ${session.role}</p>
       </div>
     </div>
     <div class="profile-grid">
@@ -483,7 +483,7 @@ function renderDashboard(session) {
       <div class="admin-item">
         <div>
           <strong>${task ? task.title : formatTaskId(sub.taskId)}</strong><br />
-          <span>${formatTaskId(sub.taskId)} • Reward at submission: $${originalReward.toFixed(2)} • ${new Date(sub.submittedAt).toLocaleString()}</span>
+          <span>${formatTaskId(sub.taskId)} â€¢ Reward at submission: $${originalReward.toFixed(2)} â€¢ ${new Date(sub.submittedAt).toLocaleString()}</span>
           ${reviewFeedback}
           ${disputeFeedback}
         </div>
@@ -544,9 +544,9 @@ async function renderShortlistedTasks(session) {
       <div class="admin-item">
         <div>
           <strong>${escapeHtml(task.title || String(task.id))}</strong><br />
-          <span>${escapeHtml(task.startup_name || "Startup App")} • Language: ${escapeHtml(task.language || "Set by startup")} • Reward: $${Number(task.reward || 0).toFixed(2)}</span>
+          <span>${escapeHtml(task.startup_name || "Startup App")} â€¢ Language: ${escapeHtml(task.language || "Set by startup")} â€¢ Reward: $${Number(task.reward || 0).toFixed(2)}</span>
         </div>
-        <a class="btn btn-ghost" href="./tasks.html">Open in Tasks</a>
+        <a class="btn btn-ghost" href="/views/tasks.html">Open in Tasks</a>
       </div>`
           )
           .join("");
@@ -560,13 +560,13 @@ function methodLabel(method) {
 }
 
 function methodLogo(methodType) {
-  return methodType === "paypal" ? "./logo-paypal.svg" : "./logo-visa.svg";
+  return methodType === "paypal" ? "/assets/brand/logo-paypal.svg" : "/assets/brand/logo-visa.svg";
 }
 
 function methodDetails(method) {
   if (method.methodType === "paypal") return escapeHtml(method.billingEmail || "");
-  const expSuffix = method.expMonth && method.expYear ? ` • ${String(method.expMonth).padStart(2, "0")}/${String(method.expYear).slice(-2)}` : "";
-  return `•••• ${escapeHtml(method.cardLast4 || "")} (${escapeHtml(method.cardholderName || "")})${expSuffix}`;
+  const expSuffix = method.expMonth && method.expYear ? ` â€¢ ${String(method.expMonth).padStart(2, "0")}/${String(method.expYear).slice(-2)}` : "";
+  return `â€¢â€¢â€¢â€¢ ${escapeHtml(method.cardLast4 || "")} (${escapeHtml(method.cardholderName || "")})${expSuffix}`;
 }
 
 async function renderWalletAndPayouts(session) {
@@ -607,7 +607,7 @@ async function renderWalletAndPayouts(session) {
             (method) => `
       <div class="admin-item">
         <div>
-          <strong><img class="payment-logo" src="${methodLogo(method.methodType)}" alt="${methodLabel(method)} logo" /> ${methodLabel(method)} • ${methodDetails(method)}</strong><br />
+          <strong><img class="payment-logo" src="${methodLogo(method.methodType)}" alt="${methodLabel(method)} logo" /> ${methodLabel(method)} â€¢ ${methodDetails(method)}</strong><br />
           <span>Added ${new Date(method.createdAt).toLocaleString()}</span>
         </div>
         <button class="btn btn-ghost remove-method-btn" data-method-id="${method.id}">Remove</button>
@@ -619,7 +619,7 @@ async function renderWalletAndPayouts(session) {
     methods.length === 0
       ? `<option value="">Add a method first</option>`
       : methods
-          .map((method) => `<option value="${method.id}">${methodLabel(method)} • ${methodDetails(method)}</option>`)
+          .map((method) => `<option value="${method.id}">${methodLabel(method)} â€¢ ${methodDetails(method)}</option>`)
           .join("");
 
   payoutRequestList.innerHTML =
@@ -630,7 +630,7 @@ async function renderWalletAndPayouts(session) {
             (item) => `
       <div class="admin-item">
         <div>
-          <strong>$${Number(item.amount).toFixed(2)} • <img class="payment-logo" src="${item.provider === "paypal" ? "./logo-paypal.svg" : "./logo-visa.svg"}" alt="" /> ${item.provider}</strong><br />
+          <strong>$${Number(item.amount).toFixed(2)} â€¢ <img class="payment-logo" src="${item.provider === "paypal" ? "/assets/brand/logo-paypal.svg" : "/assets/brand/logo-visa.svg"}" alt="" /> ${item.provider}</strong><br />
           <span>${new Date(item.createdAt).toLocaleString()}</span>
         </div>
         <span class="status-pill ${payoutStatusClass(item.status)}">${statusLabel(item.status)}</span>
@@ -647,8 +647,8 @@ async function renderWalletAndPayouts(session) {
               (receipt) => `
       <div class="admin-item">
         <div>
-          <strong>Receipt ${receipt.id} • $${Number(receipt.amount).toFixed(2)} • <img class="payment-logo" src="${receipt.provider === "paypal" ? "./logo-paypal.svg" : "./logo-visa.svg"}" alt="" /> ${receipt.provider}</strong><br />
-          <span>Provider ref: ${receipt.providerReference} • Issued ${new Date(receipt.issuedAt).toLocaleString()}</span>
+          <strong>Receipt ${receipt.id} â€¢ $${Number(receipt.amount).toFixed(2)} â€¢ <img class="payment-logo" src="${receipt.provider === "paypal" ? "/assets/brand/logo-paypal.svg" : "/assets/brand/logo-visa.svg"}" alt="" /> ${receipt.provider}</strong><br />
+          <span>Provider ref: ${receipt.providerReference} â€¢ Issued ${new Date(receipt.issuedAt).toLocaleString()}</span>
         </div>
         <span class="chip">Payout ${receipt.payoutRequestId}</span>
       </div>`
@@ -824,7 +824,7 @@ async function renderAdminTaskManager(session) {
       <div class="admin-item">
         <div>
           <strong>${escapeHtml(task.title)}</strong><br />
-          <span>${formatTaskId(task.id)} • ${escapeHtml(task.type)} • Startup: ${escapeHtml(task.startup_name || "Startup App")}</span>
+          <span>${formatTaskId(task.id)} â€¢ ${escapeHtml(task.type)} â€¢ Startup: ${escapeHtml(task.startup_name || "Startup App")}</span>
           <span class="review-note">${escapeHtml(task.summary || "")}</span>
           <span id="admin-task-feedback-${task.id}" class="review-note admin-inline-feedback hidden"></span>
         </div>
@@ -941,7 +941,7 @@ async function renderAdminSubmissionReviews() {
       <div class="admin-item">
         <div>
           <strong>${task?.title || formatTaskId(sub.taskId)}</strong><br />
-          <span>Contributor ${sub.contributorName || sub.contributorId} • ${new Date(sub.submittedAt || Date.now()).toLocaleString()}</span>
+          <span>Contributor ${sub.contributorName || sub.contributorId} â€¢ ${new Date(sub.submittedAt || Date.now()).toLocaleString()}</span>
           <details class="review-details">
             <summary>Implementation process</summary>
             <pre class="review-code-block">${escapeHtml(sub.thinking || "No implementation process submitted.")}</pre>
@@ -1055,8 +1055,8 @@ async function renderAdminPayoutManager(session) {
             (req) => `
       <div class="admin-item">
         <div>
-          <strong>User ${req.userId} • $${Number(req.amount).toFixed(2)}</strong><br />
-          <span>${req.provider} • ${new Date(req.createdAt).toLocaleString()}</span>
+          <strong>User ${req.userId} â€¢ $${Number(req.amount).toFixed(2)}</strong><br />
+          <span>${req.provider} â€¢ ${new Date(req.createdAt).toLocaleString()}</span>
         </div>
         <div class="reward-editor">
           <span class="status-pill ${payoutStatusClass(req.status)}">${statusLabel(req.status)}</span>
@@ -1115,7 +1115,7 @@ function renderAdminDisputes() {
             return `
       <div class="admin-item">
         <div>
-          <strong>Submission ${sub.id} • Task ${formatTaskId(sub.taskId)}</strong><br />
+          <strong>Submission ${sub.id} â€¢ Task ${formatTaskId(sub.taskId)}</strong><br />
           <span>Contributor ${sub.contributorName || sub.contributorId}</span>
           <span class="review-note"><strong>Contest claim:</strong> ${sub.disputeReason || "No claim text"}</span>
           ${sub.reviewNote ? `<span class="review-note"><strong>Original review note:</strong> ${sub.reviewNote}</span>` : ""}
@@ -1169,10 +1169,10 @@ async function renderStartupWorkspace(session) {
     const statusClassName = payoutStatusClass(startup.status);
     startupStatusCard.innerHTML = `
       <h3 style="margin:0 0 8px;">${escapeHtml(startup.companyName)}</h3>
-      <p style="margin:0 0 10px;">Industry: ${escapeHtml(startup.industry)} • Stage: ${escapeHtml(startup.productStage)} • Team size: ${startup.teamSize}</p>
+      <p style="margin:0 0 10px;">Industry: ${escapeHtml(startup.industry)} â€¢ Stage: ${escapeHtml(startup.productStage)} â€¢ Team size: ${startup.teamSize}</p>
       <p style="margin:0 0 10px;">Website: ${escapeHtml(startup.websiteUrl)}</p>
       <p style="margin:0 0 10px;">Tech stack: ${escapeHtml(startup.techStack || "Not set")}</p>
-      <p style="margin:0 0 10px;">Task requests created: ${Number(startup.numberOfTasks || 0)} • Task offers posted: ${Number(startup.tasksPosted || 0)}</p>
+      <p style="margin:0 0 10px;">Task requests created: ${Number(startup.numberOfTasks || 0)} â€¢ Task offers posted: ${Number(startup.tasksPosted || 0)}</p>
       <span class="status-pill ${statusClassName}">${statusLabel(startup.status)}</span>
       ${startup.reviewNote ? `<p class="review-note"><strong>Ops note:</strong> ${escapeHtml(startup.reviewNote)}</p>` : ""}
     `;
@@ -1193,7 +1193,7 @@ async function renderStartupWorkspace(session) {
               (req) => `
       <div class="admin-item">
         <div>
-          <strong>${escapeHtml(req.title)} • ${escapeHtml(req.language)} • $${Number(req.reward).toFixed(2)}</strong><br />
+          <strong>${escapeHtml(req.title)} â€¢ ${escapeHtml(req.language)} â€¢ $${Number(req.reward).toFixed(2)}</strong><br />
           <span>${new Date(req.createdAt).toLocaleString()}</span>
           ${req.adminNote ? `<span class="review-note"><strong>Admin note:</strong> ${escapeHtml(req.adminNote)}</span>` : ""}
         </div>
@@ -1213,13 +1213,13 @@ async function renderStartupWorkspace(session) {
                 (sub) => `
       <div class="admin-item">
         <div>
-          <strong>Task ${formatTaskId(sub.taskId)} • Contributor ${escapeHtml(sub.contributorName || String(sub.contributorId))}</strong><br />
-          <span>Status: ${statusLabel(sub.status)} • ${new Date(sub.submittedAt || Date.now()).toLocaleString()}</span>
+          <strong>Task ${formatTaskId(sub.taskId)} â€¢ Contributor ${escapeHtml(sub.contributorName || String(sub.contributorId))}</strong><br />
+          <span>Status: ${statusLabel(sub.status)} â€¢ ${new Date(sub.submittedAt || Date.now()).toLocaleString()}</span>
           ${sub.reviewNote ? `<span class="review-note"><strong>Admin note:</strong> ${escapeHtml(sub.reviewNote)}</span>` : ""}
           ${renderSubmissionAttachments(sub.attachments || [], sub.id)}
           ${
             sub.startupFeedbackRating
-              ? `<span class="review-note"><strong>Your rating:</strong> ${sub.startupFeedbackRating}/5${sub.startupFeedbackNote ? ` — ${escapeHtml(sub.startupFeedbackNote)}` : ""}</span>`
+              ? `<span class="review-note"><strong>Your rating:</strong> ${sub.startupFeedbackRating}/5${sub.startupFeedbackNote ? ` â€” ${escapeHtml(sub.startupFeedbackNote)}` : ""}</span>`
               : ""
           }
         </div>
@@ -1285,8 +1285,8 @@ async function renderStartupWorkspace(session) {
                 (item) => `
       <div class="admin-item">
         <div>
-          <strong>Task ${formatTaskId(item.taskId)} • ${escapeHtml(item.startupName)}</strong><br />
-          <span>Requested by admin ${item.adminUserId} • ${new Date(item.createdAt).toLocaleString()}</span>
+          <strong>Task ${formatTaskId(item.taskId)} â€¢ ${escapeHtml(item.startupName)}</strong><br />
+          <span>Requested by admin ${item.adminUserId} â€¢ ${new Date(item.createdAt).toLocaleString()}</span>
           ${item.note ? `<span class="review-note">${escapeHtml(item.note)}</span>` : ""}
         </div>
         <div class="review-controls">
@@ -1386,7 +1386,7 @@ async function renderAdminStartupRegistrations(session) {
       <div class="admin-item">
         <div>
           <strong>${escapeHtml(startup.companyName)}</strong><br />
-          <span>${escapeHtml(startup.industry)} • Team ${startup.teamSize} • ${escapeHtml(startup.websiteUrl)}</span>
+          <span>${escapeHtml(startup.industry)} â€¢ Team ${startup.teamSize} â€¢ ${escapeHtml(startup.websiteUrl)}</span>
           <span class="review-note"><strong>Intentions:</strong> ${escapeHtml(startup.intentions)}</span>
         </div>
         <div class="review-controls">
@@ -1439,8 +1439,8 @@ async function renderAdminStartupTaskRequests(session) {
               (req) => `
       <div class="admin-item">
         <div>
-          <strong>${escapeHtml(req.title)} • ${escapeHtml(req.language)} • $${Number(req.reward).toFixed(2)}</strong><br />
-          <span>Startup user ${req.startupUserId} • ${new Date(req.createdAt).toLocaleString()}</span>
+          <strong>${escapeHtml(req.title)} â€¢ ${escapeHtml(req.language)} â€¢ $${Number(req.reward).toFixed(2)}</strong><br />
+          <span>Startup user ${req.startupUserId} â€¢ ${new Date(req.createdAt).toLocaleString()}</span>
           <span class="review-note"><strong>Details:</strong> ${escapeHtml(req.details)}</span>
           <span class="review-note"><strong>Acceptance:</strong> ${escapeHtml(req.acceptanceRules)}</span>
         </div>
@@ -1531,8 +1531,8 @@ async function renderAdminUsers(session) {
       <div class="admin-item">
         <div>
           <strong>${escapeHtml(user.fullName)}</strong><br />
-          <span>User ${user.id} • ${escapeHtml(user.email)}</span>
-          <span class="review-note">Role: ${escapeHtml(user.role)} • Profile: ${user.profileCompleted ? "complete" : "incomplete"} • Active: ${user.isActive ? "yes" : "no"}</span>
+          <span>User ${user.id} â€¢ ${escapeHtml(user.email)}</span>
+          <span class="review-note">Role: ${escapeHtml(user.role)} â€¢ Profile: ${user.profileCompleted ? "complete" : "incomplete"} â€¢ Active: ${user.isActive ? "yes" : "no"}</span>
           <div class="admin-user-overview" data-user-id="${user.id}"><span class="section-note">Loading activity...</span></div>
         </div>
         <div class="review-controls">
@@ -1545,7 +1545,7 @@ async function renderAdminUsers(session) {
       <div class="admin-item">
         <div>
           <strong>${escapeHtml(user.fullName)}</strong><br />
-          <span>User ${user.id} • ${escapeHtml(user.email)}</span>
+          <span>User ${user.id} â€¢ ${escapeHtml(user.email)}</span>
           <span class="review-note">Created: ${new Date(user.createdAt).toLocaleString()}</span>
           <div class="admin-user-overview" data-user-id="${user.id}"><span class="section-note">Loading activity...</span></div>
         </div>
@@ -1573,12 +1573,12 @@ async function renderAdminUsers(session) {
         if (!target) return;
         try {
           const overview = await authedJson(`/admin/users/${user.id}/overview`, session);
-          target.innerHTML = `<span class="review-note"><strong>Activity:</strong> submissions ${overview.submissionsCount} (pending ${overview.pendingSubmissions}, approved ${overview.approvedSubmissions}, partial ${overview.partialApprovedSubmissions}, rejected ${overview.rejectedSubmissions}) • payouts ${overview.payoutRequestsCount} (paid ${overview.paidPayoutRequests}, pending ${overview.pendingPayoutRequests})${overview.lastLoginAt ? ` • last login ${new Date(overview.lastLoginAt).toLocaleString()}` : ""}</span>
+          target.innerHTML = `<span class="review-note"><strong>Activity:</strong> submissions ${overview.submissionsCount} (pending ${overview.pendingSubmissions}, approved ${overview.approvedSubmissions}, partial ${overview.partialApprovedSubmissions}, rejected ${overview.rejectedSubmissions}) â€¢ payouts ${overview.payoutRequestsCount} (paid ${overview.paidPayoutRequests}, pending ${overview.pendingPayoutRequests})${overview.lastLoginAt ? ` â€¢ last login ${new Date(overview.lastLoginAt).toLocaleString()}` : ""}</span>
             ${
               overview.startupCompanyName
-                ? `<span class="review-note"><strong>Startup:</strong> ${escapeHtml(overview.startupCompanyName)} • ${escapeHtml(
+                ? `<span class="review-note"><strong>Startup:</strong> ${escapeHtml(overview.startupCompanyName)} â€¢ ${escapeHtml(
                     overview.startupStatus || "unknown"
-                  )} • tasks posted ${overview.startupTasksPosted}</span>`
+                  )} â€¢ tasks posted ${overview.startupTasksPosted}</span>`
                 : ""
             }`;
         } catch {
@@ -1672,12 +1672,12 @@ function openDispute(submissionId) {
 
 const session = loadSession();
 if (!session) {
-  window.location.href = "./index.html";
+  window.location.href = "/index.html";
 } else if (!session.profileCompleted) {
-  window.location.href = session.role === "startup" ? "./startup-onboarding.html" : "./onboarding.html";
+  window.location.href = session.role === "startup" ? "/views/startup-onboarding.html" : "/views/onboarding.html";
 } else {
   renderNavbar(session);
-  sessionStorage.setItem(LAST_PAGE_KEY, "./dashboard.html");
+  sessionStorage.setItem(LAST_PAGE_KEY, "/views/dashboard.html");
   setBrandLinkTarget(session);
   if (session.role === "admin") {
     document.body.classList.add("admin-view");
@@ -1711,3 +1711,4 @@ if (!session) {
     renderWalletAndPayouts(session);
   }
 }
+

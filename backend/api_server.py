@@ -619,8 +619,21 @@ CORS_ALLOW_ORIGINS = [
     ).split(",")
     if normalize_origin(origin)
 ]
-ALLOW_NETLIFY_PREVIEW_ORIGINS = os.getenv("ALLOW_NETLIFY_PREVIEW_ORIGINS", "1") == "1"
-NETLIFY_ORIGIN_REGEX = re.compile(r"^https://[a-z0-9-]+\.netlify\.app$")
+ALLOW_VERCEL_PREVIEW_ORIGINS = os.getenv("ALLOW_VERCEL_PREVIEW_ORIGINS", "1") == "1"
+# Vercel production and preview hosts (*.vercel.app).
+VERCEL_ORIGIN_REGEX = re.compile(r"^https://[a-z0-9][a-z0-9.-]*\.vercel\.app$")
+
+
+def _preview_origin_regex_pattern() -> Optional[str]:
+    parts: list[str] = []
+    if ALLOW_VERCEL_PREVIEW_ORIGINS:
+        parts.append(VERCEL_ORIGIN_REGEX.pattern.strip("^$"))
+    if not parts:
+        return None
+    return "^(" + "|".join(parts) + ")$"
+
+
+PREVIEW_ORIGIN_REGEX_PATTERN = _preview_origin_regex_pattern()
 SESSION_TTL_HOURS = max(1, int(os.getenv("SESSION_TTL_HOURS", "168")))
 AUTH_COOKIE_NAME = os.getenv("AUTH_COOKIE_NAME", "appcontributor_session")
 AUTH_COOKIE_SECURE = os.getenv("AUTH_COOKIE_SECURE", "0") == "1"
@@ -665,7 +678,7 @@ app = FastAPI(title="AppContributor API", version="1.0.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ALLOW_ORIGINS,
-    allow_origin_regex=NETLIFY_ORIGIN_REGEX.pattern if ALLOW_NETLIFY_PREVIEW_ORIGINS else None,
+    allow_origin_regex=PREVIEW_ORIGIN_REGEX_PATTERN,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "X-Auth-Token", "X-CSRF-Token"],
@@ -678,7 +691,9 @@ def is_allowed_origin(origin: str) -> bool:
         return False
     if normalized in CORS_ALLOW_ORIGINS:
         return True
-    return bool(ALLOW_NETLIFY_PREVIEW_ORIGINS and NETLIFY_ORIGIN_REGEX.match(normalized))
+    if PREVIEW_ORIGIN_REGEX_PATTERN:
+        return bool(re.match(PREVIEW_ORIGIN_REGEX_PATTERN, normalized))
+    return False
 
 if sentry_sdk is not None and SENTRY_DSN:
     sentry_sdk.init(

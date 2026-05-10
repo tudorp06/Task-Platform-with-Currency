@@ -1,4 +1,4 @@
-const SESSION_KEY = "app_contributor_session";
+﻿const SESSION_KEY = "app_contributor_session";
 const AUTH_TOKEN_KEY = "app_contributor_auth_token";
 const API_BASE_URL = (() => {
   const configured = String(window.__APP_API_BASE_URL__ || "").trim();
@@ -175,25 +175,25 @@ async function uploadSubmissionAttachments(submissionId, files) {
 function renderNavbar() {
   const session = loadSession();
   if (!session) {
-    window.location.href = "./index.html";
+    window.location.href = "/index.html";
     return;
   }
   if (session.role !== "contributor") {
-    window.location.href = "./dashboard.html";
+    window.location.href = "/views/dashboard.html";
     return;
   }
   if (!session.profileCompleted) {
-    window.location.href = "./onboarding.html";
+    window.location.href = "/views/onboarding.html";
     return;
   }
 
   navbarRight.innerHTML = `
-    <a class="btn btn-ghost" href="./tasks.html">Tasks</a>
-    <a class="btn btn-ghost" href="./dashboard.html">Dashboard</a>
+    <a class="btn btn-ghost" href="/views/tasks.html">Tasks</a>
+    <a class="btn btn-ghost" href="/views/dashboard.html">Dashboard</a>
     <button class="btn btn-ghost" id="logout-btn">Logout</button>
-    <span class="chip"><img class="money-icon-img" src="./icon-wallet.svg" alt="" /> Balance: $${Number(session.balance).toFixed(2)}</span>
-    <a class="btn btn-ghost user-profile-btn" href="./dashboard.html" title="Open your profile">
-      <img class="user-icon-img" src="./icon-user.svg" alt="" />
+    <span class="chip"><img class="money-icon-img" src="/assets/icons/icon-wallet.svg" alt="" /> Balance: $${Number(session.balance).toFixed(2)}</span>
+    <a class="btn btn-ghost user-profile-btn" href="/views/dashboard.html" title="Open your profile">
+      <img class="user-icon-img" src="/assets/icons/icon-user.svg" alt="" />
       Profile
     </a>
   `;
@@ -210,7 +210,7 @@ function renderNavbar() {
     }
     localStorage.removeItem(SESSION_KEY);
     sessionStorage.removeItem(AUTH_TOKEN_KEY);
-    window.location.href = "./index.html";
+    window.location.href = "/index.html";
   });
 }
 
@@ -228,7 +228,7 @@ function renderTaskCards(tasks) {
     .map((task) => {
       const derivedLanguage = deriveTaskLanguage(task);
       const typeText = displayTaskType(task, derivedLanguage);
-      const sublineLeft = [task.startup_name || "Startup App", typeText].filter(Boolean).join(" • ");
+      const sublineLeft = [task.startup_name || "Startup App", typeText].filter(Boolean).join(" â€¢ ");
       return `
       <article class="task-card" data-task-id="${task.id}" role="button" tabindex="0" aria-label="Open ${task.title}">
         <div class="task-signal"></div>
@@ -237,16 +237,16 @@ function renderTaskCards(tasks) {
           <strong class="task-reward">$${Number(task.reward).toFixed(2)}</strong>
         </div>
         <div class="task-subline">
-          <span><img class="task-inline-icon" src="./icon-review.svg" alt="" />${sublineLeft}</span>
+          <span><img class="task-inline-icon" src="/assets/icons/icon-review.svg" alt="" />${sublineLeft}</span>
           <span>${formatTaskId(task.id)}</span>
         </div>
         <p class="task-summary">${task.summary}</p>
         <div class="task-meta">
-          <span class="task-kpi task-kpi-highlight"><img class="task-inline-icon" src="./icon-wallet.svg" alt="" /><strong>$${Number(task.reward).toFixed(2)}</strong></span>
-          <span class="task-kpi"><img class="task-inline-icon" src="./icon-user.svg" alt="" />Slots: <strong>${task.slots}</strong></span>
+          <span class="task-kpi task-kpi-highlight"><img class="task-inline-icon" src="/assets/icons/icon-wallet.svg" alt="" /><strong>$${Number(task.reward).toFixed(2)}</strong></span>
+          <span class="task-kpi"><img class="task-inline-icon" src="/assets/icons/icon-user.svg" alt="" />Slots: <strong>${task.slots}</strong></span>
           ${
             derivedLanguage
-              ? `<span class="task-kpi task-kpi-lang"><img class="task-inline-icon" src="./icon-payout.svg" alt="" />Language: <strong>${derivedLanguage}</strong></span>`
+              ? `<span class="task-kpi task-kpi-lang"><img class="task-inline-icon" src="/assets/icons/icon-payout.svg" alt="" />Language: <strong>${derivedLanguage}</strong></span>`
               : ""
           }
           <span class="status-pill ${statusClass(task.status)}">${statusLabel(task.status)}</span>
@@ -329,7 +329,7 @@ function renderAttachmentSelection() {
     .map(
       (file, index) => `
       <div class="submission-file-item">
-        <span>${file.name} • ${formatBytes(file.size)}</span>
+        <span>${file.name} â€¢ ${formatBytes(file.size)}</span>
         <button type="button" class="btn btn-ghost remove-submission-file-btn" data-file-index="${index}">Remove</button>
       </div>`
     )
@@ -507,9 +507,10 @@ languageFilter.addEventListener("change", async (event) => {
 });
 
 renderNavbar();
-sessionStorage.setItem(LAST_PAGE_KEY, "./tasks.html");
+sessionStorage.setItem(LAST_PAGE_KEY, "/views/tasks.html");
 setBrandLinkTarget();
 loadShortlist();
 renderTasks();
 updateCodeLineNumbers();
 renderAttachmentSelection();
+

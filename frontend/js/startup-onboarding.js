@@ -1,4 +1,4 @@
-const SESSION_KEY = "app_contributor_session";
+﻿const SESSION_KEY = "app_contributor_session";
 const AUTH_TOKEN_KEY = "app_contributor_auth_token";
 const API_BASE_URL = (() => {
   const configured = String(window.__APP_API_BASE_URL__ || "").trim();
@@ -70,7 +70,7 @@ async function registerStartup(payload) {
     });
   } catch {
     throw new Error(
-      "Could not reach backend API. Check Netlify APP_API_BASE_URL and backend CORS/cookie settings."
+      "Could not reach backend API. Check APP_API_BASE_URL and backend CORS/cookie settings."
     );
   }
   const body = await response.json().catch(() => ({}));
@@ -82,11 +82,11 @@ async function registerStartup(payload) {
 
 const session = loadSession();
 if (!session) {
-  window.location.href = "./index.html";
+  window.location.href = "/index.html";
 } else if (session.role !== "startup") {
-  window.location.href = session.role === "contributor" ? "./onboarding.html" : "./dashboard.html";
+  window.location.href = session.role === "contributor" ? "/views/onboarding.html" : "/views/dashboard.html";
 } else if (session.profileCompleted) {
-  window.location.href = "./dashboard.html";
+  window.location.href = "/views/dashboard.html";
 } else {
   renderNavbar(session);
 }
@@ -113,8 +113,9 @@ form?.addEventListener("submit", async (event) => {
     });
     currentSession.profileCompleted = true;
     saveSession(currentSession);
-    window.location.href = "./dashboard.html";
+    window.location.href = "/views/dashboard.html";
   } catch (error) {
     showFeedback(error?.message || "Could not submit startup registration.");
   }
 });
+

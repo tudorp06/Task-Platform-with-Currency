@@ -1,4 +1,4 @@
-const SESSION_KEY = "app_contributor_session";
+﻿const SESSION_KEY = "app_contributor_session";
 const USERS_DB_KEY = "app_contributor_users_db";
 const LAST_PAGE_KEY = "app_contributor_last_page";
 const AUTH_TOKEN_KEY = "app_contributor_auth_token";
@@ -28,7 +28,6 @@ const metricApprovedToday = document.getElementById("metric-approved-today");
 
 let activeRole = "contributor";
 let authMode = "login";
-const isOpsAccess = new URLSearchParams(window.location.search).get("ops") === "1";
 let authModalPointerDownOnBackdrop = false;
 
 function loadJson(key, fallback) {
@@ -208,20 +207,20 @@ async function loadOverviewMetrics() {
 
 function nextRouteForRole(session) {
   if (session.role === "admin") {
-    return "./dashboard.html";
+    return "/views/dashboard.html";
   }
   if (session.role === "contributor") {
-    return session.profileCompleted ? "./tasks.html" : "./onboarding.html";
+    return session.profileCompleted ? "/views/tasks.html" : "/views/onboarding.html";
   }
   if (session.role === "startup") {
-    return session.profileCompleted ? "./dashboard.html" : "./startup-onboarding.html";
+    return session.profileCompleted ? "/views/dashboard.html" : "/views/startup-onboarding.html";
   }
-  return session.profileCompleted ? "./dashboard.html" : "./onboarding.html";
+  return session.profileCompleted ? "/views/dashboard.html" : "/views/onboarding.html";
 }
 
 function setupRouteForRole(role) {
-  if (role === "admin") return "./dashboard.html";
-  return role === "startup" ? "./startup-onboarding.html" : "./onboarding.html";
+  if (role === "admin") return "/views/dashboard.html";
+  return role === "startup" ? "/views/startup-onboarding.html" : "/views/onboarding.html";
 }
 
 function openModal(defaultRole = "contributor") {
@@ -247,21 +246,14 @@ function closeModal() {
 function renderNavbar() {
   const session = loadSession();
   if (!session || !session.isAuthenticated) {
-    const opsButton = isOpsAccess ? `<button class="btn btn-primary" id="nav-signin-admin">Ops access</button>` : "";
     navbarRight.innerHTML = `
       <button class="btn btn-ghost" id="nav-signin-contributor">Sign in</button>
       <button class="btn btn-ghost" id="nav-signin-startup">Startup access</button>
-      ${opsButton}
     `;
     document
       .getElementById("nav-signin-contributor")
       .addEventListener("click", () => openModal("contributor"));
     document.getElementById("nav-signin-startup").addEventListener("click", () => openModal("startup"));
-    if (isOpsAccess) {
-      document
-        .getElementById("nav-signin-admin")
-        .addEventListener("click", () => openModal("admin"));
-    }
     return;
   }
 
@@ -272,7 +264,7 @@ function renderNavbar() {
       <a class="btn btn-primary" href="${setupRoute}">Continue setup</a>
       <button class="btn btn-ghost" id="logout-btn">Logout</button>
       <a class="btn btn-ghost user-profile-btn" href="${setupRoute}" title="Open your profile">
-        <img class="user-icon-img" src="./icon-user.svg" alt="" />
+        <img class="user-icon-img" src="/assets/icons/icon-user.svg" alt="" />
         Profile
       </a>
     `;
@@ -284,14 +276,14 @@ function renderNavbar() {
     return;
   }
 
-  const tasksLink = session.role === "contributor" ? `<a class="btn btn-ghost" href="./tasks.html">Tasks</a>` : "";
+  const tasksLink = session.role === "contributor" ? `<a class="btn btn-ghost" href="/views/tasks.html">Tasks</a>` : "";
   navbarRight.innerHTML = `
     ${tasksLink}
-    <a class="btn btn-ghost" href="./dashboard.html">Dashboard</a>
+    <a class="btn btn-ghost" href="/views/dashboard.html">Dashboard</a>
     <button class="btn btn-ghost" id="logout-btn">Logout</button>
-    <span class="chip"><img class="money-icon-img" src="./icon-wallet.svg" alt="" /> Balance: $${Number(session.balance).toFixed(2)}</span>
-    <a class="btn btn-ghost user-profile-btn" href="./dashboard.html" title="Open your profile">
-      <img class="user-icon-img" src="./icon-user.svg" alt="" />
+    <span class="chip"><img class="money-icon-img" src="/assets/icons/icon-wallet.svg" alt="" /> Balance: $${Number(session.balance).toFixed(2)}</span>
+    <a class="btn btn-ghost user-profile-btn" href="/views/dashboard.html" title="Open your profile">
+      <img class="user-icon-img" src="/assets/icons/icon-user.svg" alt="" />
       Profile
     </a>
   `;
@@ -438,8 +430,9 @@ if (bootstrapSession?.isAuthenticated && !bootstrapSession.profileCompleted) {
   window.location.href = setupRouteForRole(bootstrapSession.role);
 } else {
   renderNavbar();
-  sessionStorage.setItem(LAST_PAGE_KEY, "./index.html");
+  sessionStorage.setItem(LAST_PAGE_KEY, "/index.html");
   setBrandLinkTarget();
   updateAuthFormMode();
   loadOverviewMetrics();
 }
+

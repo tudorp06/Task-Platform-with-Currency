@@ -34,9 +34,9 @@ body {
   position: sticky;
   top: 0;
   z-index: 5;
-  min-height: 104px;
+  min-height: 96px;
   height: auto;
-  padding: 12px 22px;
+  padding: 10px 22px;
   border-bottom: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.96);
   display: flex;
@@ -48,7 +48,7 @@ body {
 .brand-box {
   display: inline-flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   padding: 0;
   margin: 0;
   min-width: 0;
@@ -63,9 +63,9 @@ body {
 }
 
 .brand-logo-image {
-  width: 80px;
-  height: 80px;
-  border-radius: 16px;
+  width: 68px;
+  height: 68px;
+  border-radius: 14px;
   object-fit: contain;
   border: none;
   background: transparent;
@@ -85,10 +85,10 @@ body {
   min-width: 0;
 }
 
-/* Sized to sit next to the 80px mark: similar visual height, one line */
+/* Sized to sit next to the mark: cap height tracks logo (~1:1 with 68px lockup) */
 .brand-text strong {
   font-family: "Plus Jakarta Sans", Inter, "Segoe UI", sans-serif;
-  font-size: clamp(28px, 2.65vw, 42px);
+  font-size: clamp(24px, 2.25vw, 36px);
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.03em;
@@ -103,10 +103,10 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 4px 11px;
-  border-radius: 6px;
+  padding: 3px 10px;
+  border-radius: 5px;
   font-family: Inter, system-ui, sans-serif;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -1614,8 +1614,9 @@ textarea:focus {
   }
 
   .brand-logo-image {
-    width: 60px;
-    height: 60px;
+    width: 52px;
+    height: 52px;
+    border-radius: 11px;
   }
 
   .brand-text {
@@ -1623,13 +1624,13 @@ textarea:focus {
   }
 
   .brand-text strong {
-    font-size: clamp(22px, 5.6vw, 32px);
+    font-size: clamp(19px, 4.9vw, 28px);
     line-height: 1;
   }
 
   .brand-version-chip {
-    font-size: 9px;
-    padding: 3px 9px;
+    font-size: 8px;
+    padding: 3px 8px;
     letter-spacing: 0.1em;
   }
 
